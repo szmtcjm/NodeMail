@@ -1,0 +1,276 @@
+
+/****************************************************
+ * Default Styles
+ ****************************************************/
+
+body, div, td {
+    font-family: Arial,Helvetica,Sans-Serif;
+}
+
+span.link {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+    cursor: hand;
+}
+
+/****************************************************
+ * Page Layout Styles
+ ****************************************************/
+
+#iLoader {
+    display: none;
+}
+
+#divFolder,
+#divReadMail,
+#divComposeMail {
+    position: absolute;
+    top: 35px;
+    left: 150px;
+    width: 600px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/****************************************************
+ * Main Menu Styles
+ ****************************************************/
+
+#ulMainMenu {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    margin: 0px;
+    padding: 10px;
+}
+
+#ulMainMenu li {
+    display: block;
+    padding: 2px 0px 2px 0px;
+    margin: 0px;
+    font-size: 80%;
+}
+
+#ulMainMenu #liCompose {
+    font-weight: bold;
+    padding: 2px 0px 8px 0px;
+}
+
+/****************************************************
+ * Folder Display Styles
+ ****************************************************/
+
+h1 {
+    font-size: 120%;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+#hFolderTitle {
+    float: left;
+}
+
+div.status {
+    float: left;
+    font-size: 60%;
+    margin-left: 3px;
+    margin-top: 8px;
+}
+
+div.header {
+    border-bottom: 1px solid #999999;
+    height: 24px;
+}
+
+/****************************************************
+ * Mail Folder Styles
+ ****************************************************/
+
+#tblMain { 
+    clear:all; 
+}
+
+td.from {
+    width: 160px;
+}
+
+td.subject {
+    width: 300px;
+}
+
+td.date {
+    width: 100px;
+    text-align: right;
+}
+
+#tblMain tbody tr td {
+    border-bottom: 1px solid #999999;
+    padding: 2px 4px;
+    background-color: #efefef;
+    cursor: pointer;
+    cursor: hand;
+    font-size: 80%;
+}
+
+#tblMain tbody tr td.attachment {
+    padding: 0px;
+    width: 16px;
+}
+
+#tblMain tbody tr.new td {
+    background-color: #F7FFCD;
+}
+
+#divItemCount {
+    float:right;
+    font-size: 60%;
+    margin-top: 8px;  
+    margin-left: 5px;     
+}
+
+thead {
+    display: none;
+}
+
+#spnItems {
+    padding: 0px 4px 0px 4px;
+}
+
+/****************************************************
+ * Message View/Composition Styles
+ ****************************************************/
+
+div.message-headers {
+    font-size: 70%;
+    color: #999999;
+    margin-top: 2px;
+    height: 15px;
+}
+
+ul.message-actions {
+    display: block;
+    padding: 0px;
+    margin: 0px 0px 5px 0px;
+    font-size: 70%;
+}
+
+ul.message-actions li {
+    display: inline;
+    padding: 0px 5px 0px 0px;
+}
+
+/****************************************************
+ * Styles for Reading Mail
+ ****************************************************/
+
+#divMessageTo,
+#divMessageCC,
+#divMessageBCC {
+    font-size: 70%;
+    color: #999999;
+}
+
+#divMessageBody {
+    font-size: 80%;   
+    padding: 30px 0px 10px 0px; 
+}
+
+#divMessageBody.html {
+    font-size: 100%;
+}
+
+#divFrom {
+    float:left; 
+}
+
+#divMessageDate {
+    float: right;
+}
+
+#aAttachments {
+    visibility: hidden;
+}
+
+#ulAttachments {
+    border-top: 1px solid #999999;
+    display: block;
+    margin: 0px 0px 30px 0px;
+    padding: 0px;
+}
+
+#ulAttachments li {
+    font-size: 60%;
+    color: #999999;
+    display: block;
+}
+
+/****************************************************
+ * Styles for Composing Mail
+ ****************************************************/
+
+td.field-label-container {
+    vertical-align: top;  
+    padding: 4px;  
+}
+
+td.field-label-container label {
+    font-size: 80%;
+}
+
+td.field-container {
+    padding: 4px;
+}
+
+td.field-container .form-field {
+    font-family: Arial,Helvetica,Sans-Serif;
+    font-size: 80%;
+    width: 500px;
+}
+
+td.message-container {
+    padding: 4px;
+}
+
+td.message-container textarea {
+    font-family: Arial,Helvetica,Sans-Serif;
+    font-size: 80%;
+    width: 557px;
+}
+
+#divComposeMailStatus {
+    text-align: center;
+    padding: 40px;
+}
+ 
+/****************************************************
+ * Notification Styles
+ ****************************************************/
+
+#divNotice {
+    padding: 4px;
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    padding-left: 24px;
+    font-size: 60%;
+    font-family: Arial,Helvetica,Sans-Serif;   
+    visibility: hidden;
+    position: absolute;
+    top: 5px;
+    left: 150px;
+    width: 600px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;    
+}
+
+div.info {
+    background-color: #F7FFCD;
+    background-image: url(../images/icon_info.gif);
+    border: 1px solid #A5A54A;
+}
+
+div.error {
+    background-color: #FFE6E6;
+    background-image: url(../images/icon_alert.gif);   
+    border: 1px solid red;
+}
