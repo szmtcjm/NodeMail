@@ -59,4 +59,24 @@ POP3Client.getMessageBody = function(msgnumber, callback) {
     });
 }
 
+function parsed_header(rawHeaders) {
+    var rawHeadersArray = rawHeader.split("\r\n"),
+        rawHeadersArraylen = rawHeadersArray.length;
+        rawHeader,
+        headerPattern = /\s*(.+):\s*=\?(.+?)\?([B|Q])\?(.*)=\?/,
+        i,
+        returnHeaders = {};
+    for (i = 0; i < rawHeadersArraylen; i++) {
+        rawHeader = rawHeadersArray[i].match(headerPattern);
+        if (rawHeader) {
+            if (rawHeader[3] === "B") {
+                returnHeaders[rawHeader[1]] = new Buffer(rawHeader[4], 'base64').toString();
+            } else {
+                returnHeaders[rawHeader[1]] = rawHeader[4]
+            }
+            
+        }
+    }
+}
+
 exports.pop3client = pop3client;
