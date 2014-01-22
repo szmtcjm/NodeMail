@@ -1,11 +1,15 @@
-var POP3Client = require("node-poplib");
-var pop3client = new POP3Client(port, host, {
-	tlserrs: false,
-	enabletls: true,
-	debug: false
-});
-var messagesList = pop3client.messagesList = [];
-var messageBodies = pop3client.messageBodies = [];
+var Poplib = require("node-poplib");
+var popemail;
+var pop3client;
+popemail.login = function() {
+    pop3client = new Poplib(port, host, {
+        tlserrs: false,
+        enabletls: true,
+        debug: false
+    });
+}
+var messagesList = popemail.messagesList = [];
+
 pop3client.on("error", function(err) {
 
         if (err.errno === 111) {
@@ -31,35 +35,46 @@ pop3client.on("login", function(status, rawdata) {
     }
 });
 
+pop3client.on("list", function(status, msgcount, msgnumber, data, rawdata) {
+    var i;
+    if (status === false) {
+        console.log("LIST failed");
+        pop3client.quit();
+    } else {
+        for (i = 0; i < msgcount; i++) {
+            pop3client.top(i, 0);
+            pop3client.retr(i);
+        }
+        messagesList.unshift(data);
+        console.log("LIST success with " + msgcount + " element(s)");
+    }
+});
 
-POP3Client.listMessages = function(callback) {
+pop3client.on("top", function(status, msgnumber, data, rawdata) {
+    if (status === true) {
+        console.log("TOP success for msgnumber " + msgnumber);
+        parseHeader(rawdata);
+    } else {
+        console.log("TOP failed for msgnumber " + msgnumber);
+        pop3client.quit();
+    }
+});
+
+pop3client.on("retr", function(status, msgnumber, data, rawdata) {
+    if (status === true) {
+        console.log("RETR success for msgnumber " + msgnumber);
+        parseMessageBody(rawdata);
+    } else {
+        console.log("RETR failed for msgnumber " + msgnumber);
+        pop3client.quit();
+    }
+});
+
+popemail.checkMessages = function(callback) {
     pop3client.list();
-    pop3client.on("list", function(status, msgcount, msgnumber, data, rawdata) {
-        if (status === false) {
-            console.log("LIST failed");
-            pop3client.quit();
-        } else {
-            messagesList.unshift(data);
-            console.log("LIST success with " + msgcount + " element(s)");
-        }
-    });
 }
 
-POP3Client.getMessageBody = function(msgnumber, callback) {
-    pop3client.retr(msgnumber);
-    pop3client.on("retr", function(status, msgnumber, data, rawdata) {
-        if (status === true) {
-            console.log("RETR success for msgnumber " + msgnumber);
-            //pop3client.dele(msgnumber);
-            //pop3client.quit();
-        } else {
-            console.log("RETR failed for msgnumber " + msgnumber);
-            pop3client.quit();
-        }
-    });
-}
-
-function parsed_header(rawHeaders) {
+function parseHeader(rawHeaders) {
     var rawHeadersArray = rawHeader.split("\r\n"),
         rawHeadersArraylen = rawHeadersArray.length;
         rawHeader,
@@ -70,13 +85,17 @@ function parsed_header(rawHeaders) {
         rawHeader = rawHeadersArray[i].match(headerPattern);
         if (rawHeader) {
             if (rawHeader[3] === "B") {
+                //未解决中文编码，现在默认utf8
                 returnHeaders[rawHeader[1]] = new Buffer(rawHeader[4], 'base64').toString();
             } else {
-                returnHeaders[rawHeader[1]] = rawHeader[4]
+                returnHeaders[rawHeader[1]] = rawHeader[4]; //quoted-printable 解不了码
             }
-            
         }
     }
+    messagesList.push(returnHeaders);
 }
 
-exports.pop3client = pop3client;
+function parseMessageBody(rawBody) {
+}
+
+exports.popemail = popemail;
