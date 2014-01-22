@@ -12,6 +12,7 @@ define(function(require, exports, module) {
         sDeleteIcon:sImagesDir + "icon_delete.gif",
         sInfoIcon:sImagesDir + "icon_info.gif",
         sErrorIcon:sImagesDir + "icon_alert.gif",
+        sAjaxMailTimingGetMail: "AjaxMailTimingGetMail.php"
     };
 
     constant.urls.aPreloadImages = [constant.urls.sRestoreIcon, constant.urls.sDeleteIcon, constant.urls.sInfoIcon, constant.urls.sErrorIcon];
@@ -34,7 +35,7 @@ define(function(require, exports, module) {
     constant.folders = {
         INBOX: 1,
         TRASH: 2,
-        aFolders: ["","Inbox", "Trash"]
+        aFolders: ["","收件箱", "垃圾箱"]
     };
 
     module.exports = constant;

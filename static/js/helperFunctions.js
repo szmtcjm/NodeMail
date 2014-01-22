@@ -20,10 +20,12 @@ define(function(require, exports, module) {
     }
 
     function getRequestBody(oForm) {
-        var aParams = new Array();
+        var aParams = [];
+        var i;
+        var sParam;
 
-        for (var i=0 ; i < oForm.elements.length; i++) {
-            var sParam = encodeURIComponent(oForm.elements[i].name);
+        for (i=0 ; i < oForm.elements.length; i++) {
+            sParam = encodeURIComponent(oForm.elements[i].name);
             sParam += "=";
             sParam += encodeURIComponent(oForm.elements[i].value);
             aParams.push(sParam);

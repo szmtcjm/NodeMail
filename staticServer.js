@@ -5,7 +5,9 @@ var mine = require("./mime").types;
 var config = require("./config");
 var url = require("url");
 
-module.exports = function(pathname) {
+module.exports = function(request, response) {
+	var urlParsed = url.parse(request.url, true);
+	var pathname = urlParsed.pathname;
 	var realPath;
 	if (pathname.slice(-1) === "/") {
 		pathname = pathname + config.Welcome.file;

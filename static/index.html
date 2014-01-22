@@ -103,14 +103,14 @@
         </div>                
         <iframe id="iLoader" src="about:blank"></iframe>
     </body>
-    <script type="text/javascript" src="./sea-modules/seajs/seajs/2.1.0/sea.js"></script>
+    <script type="text/javascript" src="frontlib/seajs/seajs/2.1.0/sea.js"></script>
     <script type="text/javascript">
         seajs.config({
-            base: "sea-modules/",
+            base: "/js/",
             alias: {
-                "jquery": "./frontlib/jquery/jquery/1.10.1/jquery.js",
+                "jquery": "frontlib/jquery/jquery-2.0.3.min.js",
             }
         });
-        seajs.use('./js/main');
+        seajs.use('/js/main');
     </script>
 </html>

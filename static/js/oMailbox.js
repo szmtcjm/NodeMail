@@ -3,6 +3,7 @@ define(function(require, exports, module) {
     var helperFun = require('./helperFunctions');
     require('./json');
     require('./zxml');
+    require("/frontlib/jquery/jquery-2.0.3.min.js");
     /**
      * The mailbox.
      */
@@ -13,9 +14,9 @@ define(function(require, exports, module) {
         //-----------------------------------------------------
 
         //folder-related information
-        info: {},   //information about the mail being displayed
+        info: new Object(),   //information about the mail being displayed
         processing: false,    //determines if processing is taking place
-        message: new {}},//information about the current message
+        message: new Object(),//information about the current message
         nextNotice: null,    //information to be displayed to the user
 
         //-----------------------------------------------------
@@ -97,10 +98,7 @@ define(function(require, exports, module) {
             if (this.processing) return;
             try {
                 this.setProcessing(true);
-                var sURL = constant.urls.sAjaxMailNavigateURL + "?folder=" +this.info.folder + "&page=" + this.info.page + "&action=" + sAction;
-                if (sId) {
-                    sURL += "&id=" + sId;
-                }
+                var sURL = "getFolder";
                 this.iLoader.src = sURL;
             } catch (oException) {
                 this.showNotice("error", oException.message);
@@ -147,40 +145,23 @@ define(function(require, exports, module) {
         },
 
         /**
-         * Makes a request to the server.
-         * @scope protected
-         * @param sAction The action to perform.
-         * @param fnCallback The function to call when the request completes.
-         * @param sId The ID of the message to act on (optional).
+         * [request description]
+         * @param  {[type]} aAction
+         * @param  {[type]} fnCallback
+         * @param  {[type]} sId
+         * @return {[type]}
          */
         request: function (sAction, fnCallback, sId) {
-            if (this.processing) return;
-            try {
-                this.setProcessing(true);
-                var oXmlHttp = zXmlHttp.createRequest();
-                var sURL = constant.urls.sAjaxMailURL + "?folder=" +this.info.folder + "&page=" + this.info.page + "&action=" + sAction;
-                if (sId) {
-                    sURL += "&id=" + sId;
-                }
-
-                oXmlHttp.open("get", sURL, true);
-                oXmlHttp.onreadystatechange = function (){
-                    try {
-                        if (oXmlHttp.readyState == 4) {
-                            if (oXmlHttp.status == 200) {
-                                fnCallback(oXmlHttp.responseText);
-                            } else {
-                                throw new Error("An error occurred while attempting to contact the server. The action (" + sAction + ") did not complete.");
-                            }
-                        }
-                    } catch (oException) {
-                        oMailbox.showNotice("error", oException.message);
-                    }
-                };
-                oXmlHttp.send(null);
-            } catch (oException) {
-                this.showNotice("error", oException.message);
+            if(this.processing) return;
+            this.setProcessing(true);
+            var sURL = constant.urls.sAjaxMailURL + "?folder=" +this.info.folder + "&page=" + this.info.page + "&action=" + sAction;
+            if (sId) {
+                sURL += "&id=" + sId;
             }
+            $.get(sURL, function(data, textStatus, jqXHR) {
+                fnCallback(data);
+            });
+
         },
 
         /**
@@ -202,34 +183,18 @@ define(function(require, exports, module) {
          */
         sendMail: function () {
             if (this.processing) return;
-            this.divComposeMailForm.style.display  = "none";
-            this.divComposeMailStatus.style.display = "block";
+            $("#divComposeMailForm").hide();
+            $("#divComposeMailStatus").show();
 
-            try {
-                this.setProcessing(true);
-                var oXmlHttp = zXmlHttp.createRequest();
-                var sData = helperFun.getRequestBody(document.forms["frmSendMail"]);
-
-                oXmlHttp.open("post", constant.urls.sAjaxMailSendURL, true);
-                oXmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                oXmlHttp.onreadystatechange = function (){
-                    try {
-                        if (oXmlHttp.readyState == 4) {
-                            if (oXmlHttp.status == 200) {
-                                sendConfirmation(oXmlHttp.responseText);
-                            } else {
-                                throw new Error("An error occurred while attempting to contact the server. The mail was not sent.");
-                            }
-                        }
-                    } catch (oException) {
-                        oMailbox.showNotice("error", oException.message);
-                    }
-                };
-                oXmlHttp.send(sData);
-            } catch (oException) {
-                this.showNotice("error", oException.message);
-            }
+            this.setProcessing(true);
+            var sData = helperFun.getRequestBody($("form").get(0));
+            $.ajax({
+                type: "POST",
+                url: constant.urls.sAjaxMailSendURL,
+                data: sData,
+                success: sendConfirmation,
+                dataType: "json"
+            });
         },
 
         /**
@@ -239,7 +204,11 @@ define(function(require, exports, module) {
          */
         setProcessing: function (bProcessing) {
             this.processing = bProcessing;
-            this.divFolderStatus.style.display = bProcessing ? "block" : "none";
+            if(bProcessing) {
+               $("#divFolderStatus").show(); 
+           }else {
+               $("#divFolderStatus").hide();
+           }
         },
 
         /**
@@ -272,13 +241,15 @@ define(function(require, exports, module) {
         },
 
         displayComposeMailForm: function (sTo, sCC, sSubject, sMessage) {
-            this.txtTo.value = sTo;
-            this.txtCC.value = sCC;
-            this.txtSubject.value = sSubject;
-            this.txtMessage.value = sMessage;
-            this.divReadMail.style.display = "none";
-            this.divComposeMail.style.display = "block";
-            this.divFolder.style.display = "none";
+            $("#txtTo").val(sTo);
+            $("#txtCC").val(sCC);
+            $("#txtSubject").val(sSubject);
+            $("#txtSubject").val(sSubject);
+            $("#txtMessage").val(sMessage);
+
+            $("#divReadMail").hide();
+            $("#divComposeMail").show();
+            $("#divFolder").hide();
             this.setProcessing(false);
         },
 
@@ -327,7 +298,7 @@ define(function(require, exports, module) {
          * @scope protected
          */
         init: function () {
-            var colAllElements = document.getElementsByTagName("*");
+            /*var colAllElements = document.getElementsByTagName("*");
             if (colAllElements.length == 0) {
                 colAllElements = document.all;
             }
@@ -336,54 +307,62 @@ define(function(require, exports, module) {
                 if (colAllElements[i].id.length > 0) {
                     this[colAllElements[i].id] = colAllElements[i];
                 }
-            }
-
+            }*/
             //assign event handlers
-            this.imgPrev.onclick = function () {
+            $("#imgPrev").click(function () {
                 oMailbox.prevPage();
-            };
+            });
 
-            this.imgNext.onclick = function () {
+            $("#imgNext").click(function () {
                 oMailbox.nextPage();
-            };
+            });
 
-            this.spnCompose.onclick = function () {
+            $("#spnCompose").click(function () {
                 oMailbox.compose();
-            };
+            });
 
-            this.spnInbox.onclick = function () {
+            $("#spnInbox").click(function () {
                 if (oMailbox.info.folder == constant.folders.INBOX) {
                     oMailbox.refreshFolder(constant.folders.INBOX);
                 } else {
                     oMailbox.switchFolder(constant.folders.INBOX);
                 }
-            };
+            });
 
-            this.spnTrash.onclick = function () {
+            $("#spnTrash").click(function () {
                 if (oMailbox.info.folder == constant.folders.TRASH) {
                     oMailbox.refreshFolder(constant.folders.TRASH);
                 } else {
                     oMailbox.switchFolder(constant.folders.TRASH);
                 }
-            };
-            this.spnEmpty.onclick = function () {
+            });
+            $("#spnEmpty").click(function () {
                 oMailbox.emptyTrash();
-            };
-            this.spnReply.onclick = function () {
+            });
+            $("#spnReply").click(function () {
                 oMailbox.reply(false);
-            };
-            this.spnReplyAll.onclick = function () {
+            });
+            $("#spnReplyAll").click(function () {
                 oMailbox.reply(true);
-            };
-            this.spnForward.onclick = function () {
+            });
+            $("#spnForward").click(function () {
                 oMailbox.forward();
-            };
-            this.spnCancel.onclick = function () {
+            });
+            $("#spnCancel").click(function () {
                 oMailbox.cancelReply();
-            };
-            this.spnSend.onclick = function () {
+            });
+            $("#spnSend").click(function () {
                 oMailbox.sendMail();
-            };
+            });
+            $("#aaddCC").click(function () {
+                oMailbox.addCC();
+            });
+            $("#aremoveCC").click(function() {
+                oMailbox.removeCC();
+            });
+
+            $("#aremoveCC").hide();
+            $("#CC").hide();
         },
 
         /**
@@ -393,121 +372,133 @@ define(function(require, exports, module) {
         load: function () {
             this.init();
             this.getMessages(constant.folders.INBOX, 1);
+            //setInterval(this.timingGetMail, 1000);
         },
 
         /**
          * Renders the messages on the screen.
          * @scope protected
          */
-        renderFolder: function () {;
-            var tblMain = this.tblMain;
+        renderFolder: function () {
 
-            //remove all child nodes
-            while (tblMain.tBodies[0].hasChildNodes()) {
-                tblMain.tBodies[0].removeChild(tblMain.tBodies[0].firstChild);
-            }
+            var $imaTd;
+            var i;
+            var oMessage;
+            var $NewTR;
+            var $imgTd;
+            var container;
+            var $tBody = $("#tblMain").children("tBody");
 
-            //create document fragment to store new DOM objects
-            var oFragment = document.createDocumentFragment();
-
+            $tBody.children().remove();
             //add a new row for each message
             if (this.info.messages.length) {
-                for (var i=0; i < this.info.messages.length; i++) {
-                    var oMessage = this.info.messages[i];
-                    var oNewTR = this.trTemplate.cloneNode(true);
-                    oNewTR.id = "tr" + oMessage.id;
-                    oNewTR.onclick = readMessage;
+                for (i = 0; i < this.info.messages.length; i++) {
+                    oMessage = this.info.messages[i];
+                    $NewTR = $("#trTemplate").clone();
+                    $NewTR.attr("id", "tr" + oMessage.id)
+                    $NewTR.click(readMessage);
 
                     if (oMessage.unread) {
-                        oNewTR.className = "new";
+                        $NewTR.attr("class", "new")
                     }
 
-                    var colCells = oNewTR.getElementsByTagName("td");
-                    var imgAction = colCells[0].childNodes[0];
-                    imgAction.id = oMessage.id;
+                    $imgTd = $NewTR.children(".img");
+                    $imgTd.attr("id", oMessage.id);
                     if (this.info.folder == constant.folders.TRASH) {
-                        imgAction.onclick = restoreMessage;
-                        imgAction.src = constant.urls.sRestoreIcon;
-                        imgAction.title = constant.string.sRestore;
+                        $imgTd.click(restoreMessage);
+                        $imgTd.children().attr("src", constant.urls.sRestoreIcon);
+                        $imgTd.attr("title", constant.string.sRestore);
                     } else {
-                        imgAction.onclick = deleteMessage;
-                        imgAction.src = constant.urls.sDeleteIcon;
-                        imgAction.title = constant.string.sDelete;
+                        $imgTd.click(deleteMessage);
+                        $imgTd.children().attr("src", constant.urls.sDeleteIcon);
+                        $imgTd.attr("title", constant.string.sDelete);
                     }
 
-                    colCells[1].appendChild(document.createTextNode(helperFun.cleanupEmail(oMessage.from)));
-                    colCells[2].firstChild.style.visibility = oMessage.hasAttachments ? "visible" : "hidden";
-                    colCells[3].appendChild(document.createTextNode(helperFun.htmlEncode(oMessage.subject)));
-                    colCells[4].appendChild(document.createTextNode(oMessage.date));
-                    oFragment.appendChild(oNewTR);
+                    $NewTR.children(".from").text(helperFun.cleanupEmail(oMessage.from));
+                    if (oMessage.hasAttachments) {
+                        $NewTR.children(".attachment").show();
+                    } else {
+                        $NewTR.children(".attachment").children().hide();
+                    }
+                    $NewTR.children(".subject").text(helperFun.htmlEncode(oMessage.subject));
+                    $NewTR.children(".date").text(oMessage.date);
+                    $tBody.append($NewTR);
                 }
             } else {
-                var oNewTR = this.trNoMessages.cloneNode(true);
-                oFragment.appendChild(oNewTR);
+                $tBody.append($("#trNoMessages").clone());
             }
 
-            //add the message rows
-            tblMain.tBodies[0].appendChild(oFragment);
-
             //only change folder name if it's different
-            if (this.hFolderTitle.innerHTML != constant.folders.aFolders[this.info.folder]) {
-                this.hFolderTitle.innerHTML = constant.folders.aFolders[this.info.folder];
+            if ($("#hFolderTitle").html() != constant.folders.aFolders[this.info.folder]) {
+                $("#hFolderTitle").html(constant.folders.aFolders[this.info.folder]);
             }
 
             //update unread message count for Inbox
             this.updateUnreadCount(this.info.unreadCount);
 
             //set up the message count (hide if there are no messages)
-            this.spnItems.style.visibility = this.info.messages.length ? "visible" : "hidden";
-            this.spnItems.innerHTML = this.info.firstMessage + "-" + (this.info.firstMessage + this.info.messages.length - 1) + " of " + this.info.messageCount;
+            if (this.info.messages.length) {
+                $("#spnItems").show();
+            } else {
+                $("#spnItems").hide();
+            }
+            $("#spnItems").text(this.info.firstMessage + "-" + (this.info.firstMessage + this.info.messages.length - 1) + " of " + this.info.messageCount);
 
             //determine show/hide of pagination images
             if (this.info.pageCount > 1) {
-                this.imgNext.style.visibility = this.info.page < this.info.pageCount ? "visible" : "hidden";
-                this.imgPrev.style.visibility = this.info.page > 1 ? "visible" : "hidden";
+                if(this.info.page < this.info.pageCount) {
+                    $("#imgNext").show();
+                }
+                if(this.info.page > 1) {
+                    $("#imgPrev").show();
+                }
             } else {
-                this.imgNext.style.visibility = "hidden";
-                this.imgPrev.style.visibility = "hidden";
+                $("#imgNext").hide();
+                $("#imgPrev").hide();
             }
 
-            this.divFolder.style.display = "block";
-            this.divReadMail.style.display = "none";
-            this.divComposeMail.style.display = "none";
+            $("#divFolder").show();
+            $("#divReadMail").hide();
+            $("#divComposeMail").hide();
         },
 
         renderMessage: function () {
-            this.hSubject.innerHTML = helperFun.htmlEncode(this.message.subject);
-            this.divMessageFrom.innerHTML = constant.string.sFrom + " " + helperFun.htmlEncode(this.message.from);
-            this.divMessageTo.innerHTML = constant.string.sTo + " " + helperFun.htmlEncode(this.message.to);
-            this.divMessageCC.innerHTML = this.message.cc.length ? constant.string.sCC + " " + helperFun.htmlEncode(this.message.cc) : "";
-            this.divMessageBCC.innerHTML = this.message.bcc.length ? constant.string.sBCC + " " + helperFun.htmlEncode(this.message.bcc) : "";
-            this.divMessageDate.innerHTML = this.message.date;
-            this.divMessageBody.innerHTML = this.message.message;
+            var i,
+                $ulAttachments = $("#ulAttachments"), 
+                $liAttachments = $("#liAttachments"), 
+                liHtml,
+                currmessage = this.message;
+            if (currmessage.subject.length > 50) {
+                currmessage.subject = currmessage.subject.slice(0, 20) + "..."
+            }
+            $("#hSubject").html(helperFun.htmlEncode(currmessage.subject));
+            $("#divMessageFrom").html(constant.string.sFrom + " " + helperFun.htmlEncode(currmessage.from));
+            $("#divMessageTo").html(constant.string.sTo + " " + helperFun.htmlEncode(currmessage.to));
+            $("#divMessageCC").html(currmessage.cc.length ? constant.string.sCC + " " + helperFun.htmlEncode(currmessage.cc) : "");
+            $("#divMessageBCC").html(currmessage.bcc.length ? constant.string.sBCC + " " + helperFun.htmlEncode(currmessage.bcc) : "");
+            $("#divMessageDate").html(currmessage.date);
+            $("#divMessageBody").html(currmessage.message);
 
-            if (this.message.hasAttachments) {
-                this.ulAttachments.style.display = "";
-
-                var oFragment = document.createDocumentFragment();
-
-                for (var i=0; i < this.message.attachments.length; i++) {
-                    var oLI = document.createElement("li");
-                    oLI.className = "attachment";
-                    oLI.innerHTML = "<a href=\"" + constant.urls.sAjaxMailAttachmentURL + "?id=" + this.message.attachments[i].id + "\" target=\"_blank\">" + this.message.attachments[i].filename + "</a> (" + this.message.attachments[i].size + ")";
-                    oFragment.appendChild(oLI);
+            if (currmessage.hasAttachments) {
+                $ulAttachments.show();
+                var attachmentsLen = currmessage.attachments;
+                for (i = 0; i < attachmentsLen.length; i++) {
+                    liHtml = "<li class='attachment'>"
+                    liHtml += "<a href=\"" + constant.urls.sAjaxMailAttachmentURL + "?id=" + currmessage.attachments[i].id + "\" target=\"_blank\">" + currmessage.attachments[i].filename + "</a> (" + currmessage.attachments[i].size + ")";
+                    liHtml += "</li>"
+                    $ulAttachments.append(liHtml);
                 }
-
-                this.ulAttachments.appendChild(oFragment);
-                this.liAttachments.style.display = "";
+                $liAttachments.show();
             } else {
-                this.ulAttachments.style.display = "none";
-                this.liAttachments.style.display = "none";
-                this.ulAttachments.innerHTML = "";
+                $ulAttachments.hide();
+                $liAttachments.hide();
+                $ulAttachments.html("");
             }
 
-            this.updateUnreadCount(this.message.unreadCount);
-            this.divFolder.style.display = "none";
-            this.divReadMail.style.display = "block";
-            this.divComposeMail.style.display = "none";
+            this.updateUnreadCount(currmessage.unreadCount);
+            $("#divFolder").hide();
+            $("#divReadMail").show();
+            $("#divComposeMail").hide();
         },
 
         /**
@@ -526,12 +517,12 @@ define(function(require, exports, module) {
          * @param sMessage The message to display.
          */
         showNotice: function (sType, sMessage) {
-            var divNotice = this.divNotice;
-            divNotice.className = sType;
-            divNotice.innerHTML = sMessage;
-            divNotice.style.visibility = "visible";
+            var $divNotice = $("#divNotice");
+            $divNotice.addClass(sType);
+            $divNotice.text(sMessage);
+            $divNotice.show();
             setTimeout(function () {
-                divNotice.style.visibility = "hidden";
+                $divNotice.hide();
             }, constant.iShowNoticeTime);
         },
 
@@ -542,12 +533,122 @@ define(function(require, exports, module) {
          * @param iCount The number of unread messages.
          */
         updateUnreadCount: function (iCount) {
-            this.spnUnreadMail.innerHTML = iCount > 0 ? " (" + iCount + ")" : "";
+            $("#spnUnreadMail").text(iCount > 0 ? " (" + iCount + ")" : "");
         },
+
+        /**
+         * [addCC description]
+         */
         addCC: function () {
-            var tr = document.createElement("tr");
-            tr.
+           $("#CC").show();
+           $("#aaddCC").hide();
+           $("#aremoveCC").show();
+        },
+
+        /**
+         * [removeCC description]
+         * @return {[type]}
+         */
+        removeCC: function () {
+            $("#CC").hide();
+            $("#aremoveCC").hide();
+            $("#aaddCC").show();
+        },
+
+        /**
+         * [timingGetMail description]
+         * @return {[type]} [description]
+         */
+        timingGetMail: function () {
+            var XMLHttpR = new XMLHttpRequest(),
+                response,
+                that = this,
+                messagesInfo,
+                messages;
+            XMLHttpR.onreadystatechange = function () {
+                if (XMLHttpR.readyState === 4) {
+                    if (XMLHttpR.status === 200) {
+                        response = XMLHttpR.responseText;
+                        if(response === "{}") {
+                            return;
+                        }
+                        if (typeof response == "string") {
+                            messagesInfo = JSON.parse(response);
+                        } else {
+                            messagesInfo = response;
+                        }
+                        messages = messagesInfo.messages;
+                        if(messages.length > 0) {
+                            oMailbox.insertMessages(messages);
+                        }
+                    }
+                }
+            }
+            XMLHttpR.open("GET",constant.urls.sAjaxMailTimingGetMail ,true);
+            XMLHttpR.send(null);
+            /*$.get(constant.urls.sAjaxMailTimingGetMail, function(data, textStatus, jqXHR) {
+                alert(data)
+            });*/
+        },
+
+        insertMessages: function (messagesInfo) {
+            var messagesCount = messagesInfo.length,
+                oMessage,
+                $NewTR,
+                $imgTd,
+                $tBody = $("#tblMain").children("tBody"),
+                i;
+
+            var tbody = document.getElementById("tblMain").getElementsByTagName("tBody")[0];
+            var childrenTd = tbody.childNodes;
+            if (this.info.firstMessage === 1) { 
+                for (i = 0; i < messagesCount; i++) {
+                    oMessage = messagesInfo[i];
+                    $NewTR = $("#trTemplate").clone();
+                    $NewTR.attr("id", "tr" + oMessage.id)
+                    $NewTR.click(readMessage);
+                    $NewTR.attr("class", "new")
+
+                    $imgTd = $NewTR.children(".img");
+                    $imgTd.attr("id", oMessage.id);
+                    if (this.info.folder == constant.folders.TRASH) {
+                        $imgTd.click(restoreMessage);
+                        $imgTd.children().attr("src", constant.urls.sRestoreIcon);
+                        $imgTd.attr("title", constant.string.sRestore);
+                    } else {
+                        $imgTd.click(deleteMessage);
+                        $imgTd.children().attr("src", constant.urls.sDeleteIcon);
+                        $imgTd.attr("title", constant.string.sDelete);
+                    }
+
+                    $NewTR.children(".from").text(helperFun.cleanupEmail(oMessage.from));
+                    if (oMessage.hasAttachments) {
+                        $NewTR.children(".attachment").show();
+                    } else {
+                        $NewTR.children(".attachment").children().hide();
+                    }
+                    $NewTR.children(".subject").text(helperFun.htmlEncode(oMessage.subject));
+                    $NewTR.children(".date").text(oMessage.date);
+                    $tBody.prepend($NewTR);
+                    
+                    tbody.removeChild(childrenTd[childrenTd.length - 1]);
+                    delete childrenTd[length - 1];
+                }
+            }
+            
+                //修改未读邮件数和邮件总数
+                this.info.messageCount += messagesCount;
+                this.info.unreadCount += messagesCount;
+                var splItem = document.getElementById("spnItems");
+                var splItemString = splItem.innerText.split("of")[0]; 
+                splItem.innerText = splItemString + "of " + this.info.messageCount;
+                this.updateUnreadCount(this.info.unreadCount);
+        },
+
+        test: function() {
+            alert(this);
         }
+        
         
     };
 
@@ -593,17 +694,16 @@ define(function(require, exports, module) {
      * @param sData The data returned from the server.
      */
     function sendConfirmation(sData) {
-        var oResponse = JSON.parse(sData);
-        if (oResponse.error) {
-            alert("An error occurred:\n" + oResponse.message);
+        if (sData.error) {
+            alert("An error occurred:\n" + sData.message);
         } else {
-            oMailbox.showNotice("info", oResponse.message);
-            oMailbox.divComposeMail.style.display = "none";
-            oMailbox.divReadMail.style.display = "none";
-            oMailbox.divFolder.style.display = "block";
+            oMailbox.showNotice("info", sData.message);
+            $("#divComposeMail").hide();
+            $("#divReadMail").hide();
+            $("#divFolder").show();
         }
-        oMailbox.divComposeMailForm.style.display  = "block";
-        oMailbox.divComposeMailStatus.style.display = "none";
+        $("#divComposeMailForm").show();
+        $("#divComposeMailStatus").hide();
         oMailbox.setProcessing(false);
     }
 

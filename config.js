@@ -9,7 +9,7 @@ exports.Welcome = {
 	file: "index.html"
 };
 exports.action = {
-	getfolder: "getfolder",
+	getFolder: "getFolder",
 	getmessage: "getMessageBody"
 }
 
