@@ -24,12 +24,22 @@ var server = http.createServer(function(request, response) {
 		staticServer(request, response);
 	}
 
-	function getMessages(fold, page) {
+	function getMessages(folder, page) {
 		popemail.checkMail(request, response);
 		popemail.on("end", function() {
+			var messagesList = popemail.messagesList;
+			var responseInfo = {};
+			responseInfo.messageCount = messagesList.length;
+			console.log(responseInfo.messageCount);
+			responseInfo.page = page;
+			responseInfo.pageCount = responseInfo.messageCount / 10;
+			responseInfo.folder = folder;
+			responseInfo.firstMessage = (page - 1) * 10;
+			responseInfo.unreadCount = responseInfo.pageCount;
+			responseInfo.messages = messagesList.slice((page - 1) * 10 + 1, page * 10);
 			response.setHeader("Content-Type", "application/json");
 			response.writeHead(200, "Ok");
-			response.end(JSON.stringify(popemail.messagesList.slice((page - 1) * 10 + 1, page * 10)));
+			response.end(JSON.stringify(responseInfo));
 		});
 	}
 

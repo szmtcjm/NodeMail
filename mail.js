@@ -86,26 +86,24 @@ popemail.checkMail = function(request, response) {
 }
 
 function parseHeader(rawHeaders) {
-    var rawHeadersArray = rawHeader.split("\r\n"),
-        rawHeadersArraylen = rawHeadersArray.length;
-    rawHeader,
-    headerPattern1 = /(.+):\s*=\?(.+?)\?([B|Q])\?(.*)=\?/,
-    headerPattern2 = /(.+):\s*(.+)/
-    i,
-    returnHeaders = {};
+    var rawHeadersArray = rawHeaders.split("\r\n"),
+        rawHeadersArraylen = rawHeadersArray.length,
+        rawHeader,
+        headerPattern = /(.+):\s*(?:=\?(.+?)\?([B|Q])\?|)([^\?]*)(?:\?|)/,
+        i,
+        returnHeaders = {};
     for (i = 0; i < rawHeadersArraylen; i++) {
-        rawHeader = rawHeadersArray[i].match(headerPattern1);
+        rawHeader = rawHeadersArray[i].match(headerPattern);
         if (rawHeader) {
             rawHeader[1] = rawHeader[1].toLowerCase();
             if (rawHeader[3] === "B") {
                 //未解决中文编码，现在默认utf8
                 returnHeaders[rawHeader[1]] = new Buffer(rawHeader[4], 'base64').toString();
-            } else {
+            } else if (rawHeader[3] === "Q"){
                 returnHeaders[rawHeader[1]] = rawHeader[4]; //quoted-printable 解不了码
+            } else {
+                returnHeaders[rawHeader[1]] = rawHeader[4]; //未编码
             }
-        } else {
-            rawHeader = rawHeadersArray[i].match(headerPattern2);
-            returnHeaders[rawHeader[1].toLowerCase()] = rawHeader[2];
         }
     }
     returnHeaders.unread = true;

@@ -159,7 +159,6 @@ define(function(require, exports, module) {
                 sURL += "&id=" + sId;
             }
             $.get(sURL, function(data, textStatus, jqXHR) {
-                alert(textStatus);
                 if (textStatus) {
                     fnCallback.call(context, data);
                 }
