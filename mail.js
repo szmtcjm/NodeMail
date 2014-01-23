@@ -10,7 +10,7 @@ popemail.on = function(event, callback) {
     pop3client.on(event, callback);
 }
 
-popemail.checkMail = function(callback) {
+popemail.checkMail = function(request, response) {
     pop3client = new Poplib(995, "pop.126.com", {
         tlserrs: false,
         enabletls: true,
@@ -19,11 +19,14 @@ popemail.checkMail = function(callback) {
 
     pop3client.on("error", function(err) {
 
-        if (err.errno === 111) {
+        if (err.errno === "ETIMEDOUT") {
             console.log("Unable to connect to server");
         } else {
             console.log("Server error occurred");
         }
+        response.setHeader("Content-Type", "application/json");
+        response.writeHead(200, "Ok");
+        response.end("{err : " + err + "}");
         console.log(err);
     });
 

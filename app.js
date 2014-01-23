@@ -25,7 +25,7 @@ var server = http.createServer(function(request, response) {
 	}
 
 	function getMessages(fold, page) {
-		popemail.checkMail();
+		popemail.checkMail(request, response);
 		popemail.on("end", function() {
 			response.setHeader("Content-Type", "application/json");
 			response.writeHead(200, "Ok");
