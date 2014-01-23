@@ -111,4 +111,4 @@ function parseHeader(rawHeaders) {
 
 function parseMessageBody(rawBody) {}
 
-exports.popemail = popemail;
+module.exports = popemail;
