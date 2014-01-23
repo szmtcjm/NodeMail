@@ -58,7 +58,7 @@ define(function(require, exports, module) {
         getMessages: function (iFolder, iPage) {
             this.info.folder = iFolder;
             this.info.page = iPage;
-            this.navigate("getfolder");
+            this.request("getFolder", this.displayFolder, undefined, oMailbox);
         },
 
         /**
@@ -151,17 +151,18 @@ define(function(require, exports, module) {
          * @param  {[type]} sId
          * @return {[type]}
          */
-        request: function (sAction, fnCallback, sId) {
+        request: function (sAction, fnCallback, sId, context) {
             if(this.processing) return;
             this.setProcessing(true);
-            var sURL = constant.urls.sAjaxMailURL + "?folder=" +this.info.folder + "&page=" + this.info.page + "&action=" + sAction;
+            var sURL = sAction + "?folder=" +this.info.folder + "&page=" + this.info.page;
             if (sId) {
                 sURL += "&id=" + sId;
             }
             $.get(sURL, function(data, textStatus, jqXHR) {
-                fnCallback(data);
+                if (textStatus) {
+                    fnCallback.call(context, data);
+                }
             });
-
         },
 
         /**

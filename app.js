@@ -25,12 +25,12 @@ var server = http.createServer(function(request, response) {
 		staticServer(request, response);
 	}
 
-	function getfolder(foldNumber) {
+	function getPage(page) {
 		popemail.checkMail();
 		popemail.on("end", function() {
 			response.setHeader("Content-Type", "application/json");
 			response.writeHead(200, "Ok");
-			response.end(popemail.messagesList.slice((foldNumber - 1) * 10 + 1, foldNumber * 10));
+			response.end(JSON.stringify(popemail.messagesList.slice((page - 1) * 10 + 1, page * 10)));
 		});
 	}
 
