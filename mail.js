@@ -50,10 +50,7 @@ popemail.checkMail = function(request, response) {
             console.log("LIST failed");
             pop3client.quit();
         } else {
-            for (i = msgcount; i > 0; i--) {
-                pop3client.top(i, 0);
-                //pop3client.retr(i);
-            }
+            pop3client.top(10, 0);
             console.log("LIST success with " + msgcount + " element(s)");
         }
     });
@@ -61,10 +58,12 @@ popemail.checkMail = function(request, response) {
     pop3client.on("top", function(status, msgnumber, data, rawdata) {
         if (status === true) {
             console.log("TOP success for msgnumber " + msgnumber);
-            parseHeader(data);
+            parseHeader(data, msgnumber);
             if (msgnumber === 1) {
                 pop3client.emit("end");
                 pop3client.quit();
+            } else {
+                pop3client.top(msgnumber - 1, 0);
             }
         } else {
             console.log("TOP failed for msgnumber " + msgnumber);
@@ -83,7 +82,7 @@ popemail.checkMail = function(request, response) {
     });
 }
 
-function parseHeader(rawHeaders) {
+function parseHeader(rawHeaders, msgnumber) {
     var rawHeadersArray = rawHeaders.split("\r\n"),
         rawHeadersArraylen = rawHeadersArray.length,
         rawHeader,
@@ -105,7 +104,7 @@ function parseHeader(rawHeaders) {
         }
     }
     returnHeaders.unread = true;
-    messagesList.push(returnHeaders);
+    messagesList[msgnumber] = returnHeaders;
 }
 
 function parseMessageBody(rawBody) {}

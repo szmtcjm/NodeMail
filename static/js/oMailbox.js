@@ -406,7 +406,7 @@ define(function(require, exports, module) {
                 for (i = 0; i < this.info.messages.length; i++) {
                     oMessage = this.info.messages[i];
                     $NewTR = $("#trTemplate").clone();
-                    $NewTR.attr("id", "tr" + oMessage.id)
+                    $NewTR.attr("id", "tr" + oMessage["message-id"])
                     $NewTR.click(readMessage);
 
                     if (oMessage.unread) {
