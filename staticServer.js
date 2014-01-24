@@ -31,12 +31,12 @@ module.exports = function(request, response) {
 
 			ext = path.extname(pathname);
 			ext = ext ? ext.slice(1) : "unknown";
-			if (ext.match(config.Expires.fileMatch)) {
+			/*if (ext.match(config.Expires.fileMatch)) {
 				expires = new Date();
 				expires.setTime(expires.getTime() + config.Expires.maxAge * 1000);
 				response.setHeader("Expires", expires.toUTCString());
 				response.setHeader("Cache-Control", "max-age=" + config.Expires.maxAge);
-			}
+			}*/
 
 			contentType = mine[ext] || "text/plain";
 			response.setHeader("Content-Type", contentType);
@@ -47,6 +47,7 @@ module.exports = function(request, response) {
 			if (request.headers[ifModifiedSince] && lastModify === request.headers[ifModifiedSince]) {
 				response.writeHead(304, "Not Modified");
 				response.end();
+				return;
 			}
 
 			stream = fs.createReadStream(realPath, {
@@ -55,17 +56,17 @@ module.exports = function(request, response) {
 			acceptEncoding = request.headers["accept-encoding"] || "";
 			var matched = ext.match(config.Compress.match);
 			if (matched && acceptEncoding.match(/\bgzip\b/)) {
-				response.writeHead(200, "Ok", {
+				response.writeHead(200, "OK", {
 					"Content-Encoding": "gzip"
 				});
 				stream = stream.pipe(zlib.createGzip());
 			} else if (matched && acceptEncoding.match(/\bdeflate\b/)) {
-				response.writeHead(200, "Ok", {
+				response.writeHead(200, "OK", {
 					"Content-Encoding": "deflate"
 				});
 				stream = stream.pipe(zlib.createDeflate());
 			} else {
-				response.writeHead(200, "Ok");
+				response.writeHead(200, "OK");
 				stream.pipe(response);
 			}
 			stream.pipe(response);

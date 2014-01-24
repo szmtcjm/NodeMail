@@ -18,16 +18,14 @@ popemail.checkMail = function(request, response) {
     });
 
     pop3client.on("error", function(err) {
-
         if (err.errno === "ETIMEDOUT") {
             console.log("Unable to connect to server");
         } else {
-            console.log("Server error occurred");
+            console.log(err);
         }
         response.setHeader("Content-Type", "application/json");
-        response.writeHead(200, "Ok");
-        response.end("{err : " + err + "}");
-        console.log(err);
+        response.writeHead(200, "TIMEOUT");
+        response.end(JSON.stringify(err));
     });
 
     pop3client.on("connect", function() {

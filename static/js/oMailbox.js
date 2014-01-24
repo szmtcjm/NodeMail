@@ -151,18 +151,28 @@ define(function(require, exports, module) {
          * @param  {[type]} sId
          * @return {[type]}
          */
-        request: function (sAction, fnCallback, sId, context) {
-            if(this.processing) return;
-            this.setProcessing(true);
-            var sURL = sAction + "?folder=" +this.info.folder + "&page=" + this.info.page;
+        request: function(sAction, fnCallback, sId, context) {
+            var that = this;
+            if (that.processing) return;
+            that.setProcessing(true);
+            var sURL = sAction + "?folder=" + that.info.folder + "&page=" + that.info.page;
             if (sId) {
                 sURL += "&id=" + sId;
             }
             $.get(sURL, function(data, textStatus, jqXHR) {
-                if (textStatus) {
+                if (jqXHR.statusText === "OK") {
                     fnCallback.call(context, data);
+                } else if (jqXHR.statusText === "TIMEOUT") {
+                    that.showNotice("error", "请求超时");
                 }
             });
+            $(document).ajaxError(function(event, request, settings, exception) {
+                console.log(event);
+                console.log(exception);
+                console.log(settings);
+            });
+
+
         },
 
         /**

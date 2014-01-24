@@ -254,7 +254,6 @@ td.message-container textarea {
     padding-left: 24px;
     font-size: 60%;
     font-family: Arial,Helvetica,Sans-Serif;   
-    visibility: hidden;
     position: absolute;
     top: 5px;
     left: 150px;

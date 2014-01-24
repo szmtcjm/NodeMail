@@ -38,7 +38,7 @@ var server = http.createServer(function(request, response) {
 			responseInfo.unreadCount = responseInfo.pageCount;
 			responseInfo.messages = messagesList.slice((page - 1) * 10 + 1, page * 10);
 			response.setHeader("Content-Type", "application/json");
-			response.writeHead(200, "Ok");
+			response.writeHead(200, "OK");
 			response.end(JSON.stringify(responseInfo));
 		});
 	}
@@ -48,8 +48,6 @@ var server = http.createServer(function(request, response) {
 	}
 
 });
-
-
 
 server.listen(PORT);
 console.log("Server runing at port: " + PORT + ".");
