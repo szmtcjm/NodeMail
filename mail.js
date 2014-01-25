@@ -1,6 +1,7 @@
 var Poplib = require("poplib");
 var events = require("events");
 var util = require("util");
+var mimelib = require("mimelib");
 var popemail = {};
 var pop3client;
 
@@ -11,6 +12,11 @@ popemail.on = function(event, callback) {
 }
 
 popemail.checkMail = function(request, response) {
+    var hasSend = false;
+    response.on("finish", function(){
+        hasSend = true;
+    });
+
     pop3client = new Poplib(995, "pop.126.com", {
         tlserrs: false,
         enabletls: true,
@@ -23,21 +29,23 @@ popemail.checkMail = function(request, response) {
         } else {
             console.log(err);
         }
-        response.setHeader("Content-Type", "application/json");
-        response.writeHead(200, "TIMEOUT");
-        response.end(JSON.stringify(err));
+        if (!hasSend) {
+            response.setHeader("Content-Type", "application/json");
+            response.writeHead(200, "TIMEOUT");
+            response.end(JSON.stringify(err));
+        }
     });
 
     pop3client.on("connect", function() {
         console.log("CONNECT success");
-        pop3client.login("szmtcjm@126.com", "cjm3062121045");
+        pop3client.login("szmtcjm@126.com", "60c78J91m");
     });
 
     pop3client.on("login", function(status, rawdata) {
 
         if (status) {
             console.log("LOGIN/PASS success");
-            pop3client.list();
+            pop3client.stat();
         } else {
             console.log("LOGIN/PASS failed");
             pop3client.quit();
@@ -50,7 +58,7 @@ popemail.checkMail = function(request, response) {
             console.log("LIST failed");
             pop3client.quit();
         } else {
-            pop3client.top(10, 0);
+            //pop3client.top(10, 0);
             console.log("LIST success with " + msgcount + " element(s)");
         }
     });
@@ -61,12 +69,26 @@ popemail.checkMail = function(request, response) {
             parseHeader(data, msgnumber);
             if (msgnumber === 1) {
                 pop3client.emit("end");
-                pop3client.quit();
+                pop3client.stat();
+                //pop3client.quit();
             } else {
                 pop3client.top(msgnumber - 1, 0);
             }
         } else {
             console.log("TOP failed for msgnumber " + msgnumber);
+            pop3client.quit();
+        }
+    });
+
+    pop3client.on("stat", function(status, data, rawdata) {
+        var pattern = /^\+OK\s(\d+)\s(\d+)/;
+        var msgcount;
+        if (status === true) {
+            console.log("STAT success");
+            msgcount = +rawdata.match(pattern)[1];
+            pop3client.top(10, 0);
+        } else {
+            console.log("STAT failed");
             pop3client.quit();
         }
     });
@@ -94,17 +116,16 @@ function parseHeader(rawHeaders, msgnumber) {
         if (rawHeader) {
             rawHeader[1] = rawHeader[1].toLowerCase();
             if (rawHeader[3] === "B") {
-                //未解决中文编码，现在默认utf8
-                returnHeaders[rawHeader[1]] = new Buffer(rawHeader[4], 'base64').toString();
+                returnHeaders[rawHeader[1]] = mimelib.decodeBase64(rawHeader[4], rawHeader[2]);
             } else if (rawHeader[3] === "Q"){
-                returnHeaders[rawHeader[1]] = rawHeader[4]; //quoted-printable 解不了码
+                returnHeaders[rawHeader[1]] = mimelib.decodeQuotedPrintable(rawHeader[4], rawHeader[2]); //quoted-printable 
             } else {
                 returnHeaders[rawHeader[1]] = rawHeader[4]; //未编码
             }
         }
     }
     returnHeaders.unread = true;
-    messagesList[msgnumber] = returnHeaders;
+    messagesList[msgnumber - 1] = returnHeaders;
 }
 
 function parseMessageBody(rawBody) {}

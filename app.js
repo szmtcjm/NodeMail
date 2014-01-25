@@ -10,6 +10,7 @@ var server = http.createServer(function(request, response) {
 	var urlParsed = url.parse(request.url, true);
 	var pathname = urlParsed.pathname;
 	var theQueryString = urlParsed.query;
+	
 	if (pathname.slice(1) === config.action.getFolder) {
 		if (theQueryString.folder) {
 			getMessages(theQueryString.folder, theQueryString.page);
@@ -30,13 +31,12 @@ var server = http.createServer(function(request, response) {
 			var messagesList = popemail.messagesList;
 			var responseInfo = {};
 			responseInfo.messageCount = messagesList.length;
-			console.log(responseInfo.messageCount);
 			responseInfo.page = page;
-			responseInfo.pageCount = responseInfo.messageCount / 10;
+			responseInfo.pageCount = 10;
 			responseInfo.folder = folder;
-			responseInfo.firstMessage = (page - 1) * 10;
+			responseInfo.firstMessage = (page - 1) * 10 + 1;
 			responseInfo.unreadCount = responseInfo.pageCount;
-			responseInfo.messages = messagesList.slice((page - 1) * 10 + 1, page * 10);
+			responseInfo.messages = messagesList.slice((page - 1) * 10, page * 10);
 			response.setHeader("Content-Type", "application/json");
 			response.writeHead(200, "OK");
 			response.end(JSON.stringify(responseInfo));
