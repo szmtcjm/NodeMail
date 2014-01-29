@@ -2,19 +2,36 @@ var Poplib = require("poplib");
 var events = require("events");
 var util = require("util");
 var mimelib = require("mimelib");
+var MongoClient = require('mongodb').MongoClient;
 var popemail = {};
 var pop3client;
 
-var messagesList = popemail.messagesList = [];
+var messagesList = [];
+var mongoclient = new MongoClient(new Server("localhost", 27017), {native_parser: true});
 
-popemail.on = function(event, callback) {
-    pop3client.on(event, callback);
-}
-
-popemail.checkMail = function(request, response) {
+var checkMail = function(request, response) {
     var hasSend = false;
     response.on("finish", function(){
         hasSend = true;
+    });
+
+    mongoclient.on("end", function(){
+        mongoclient.open(function(err, mongoclient) {
+            var db, collection;
+            if (err) {
+                console.log("mongodb error:" + err);
+                throw err;
+            } else {
+                db = mongoclient.db("Mail"),
+                collection = db.collection("messages");
+                collection.insert(messagesList, {w:1}, function(err, result){
+                    if (err) {
+                        console.log("mondb insert error :" + err);
+                    }
+                    mongoclient.close();
+                });
+            }
+        });
     });
 
     pop3client = new Poplib(995, "pop.126.com", {
@@ -68,9 +85,8 @@ popemail.checkMail = function(request, response) {
             console.log("TOP success for msgnumber " + msgnumber);
             parseHeader(data, msgnumber);
             if (msgnumber === 1) {
-                pop3client.emit("end");
-                pop3client.stat();
-                //pop3client.quit();
+                pop3client.quit();
+                mongoclient.emit("end");
             } else {
                 pop3client.top(msgnumber - 1, 0);
             }
@@ -86,7 +102,7 @@ popemail.checkMail = function(request, response) {
         if (status === true) {
             console.log("STAT success");
             msgcount = +rawdata.match(pattern)[1];
-            pop3client.top(10, 0);
+            pop3client.top(msgcount, 0);
         } else {
             console.log("STAT failed");
             pop3client.quit();
@@ -103,6 +119,8 @@ popemail.checkMail = function(request, response) {
         }
     });
 }
+
+setInterval(checkMail, 3000);
 
 function parseHeader(rawHeaders, msgnumber) {
     var rawHeadersArray = rawHeaders.split("\r\n"),
@@ -125,9 +143,27 @@ function parseHeader(rawHeaders, msgnumber) {
         }
     }
     returnHeaders.unread = true;
+    returnHeaders.folder = "1";
     messagesList[msgnumber - 1] = returnHeaders;
 }
 
 function parseMessageBody(rawBody) {}
 
-module.exports = popemail;
+exports.getMessages = function(folder, page, callback) {
+    mongoclient.open(function(err, mongoclient) {
+        if (err) {
+            console.log("mongodb connect error: " + err);
+            return;
+        }
+        db = mongoclient.db("Mail"),
+        collection = db.collection("messages");
+        collection.find({folder: folder}, { "limit": 10, "skip": (page - 1) * 10}).toArray(function(err, docs){
+            if (err) {
+                console.log("mongodb find eror: " + err);
+                return;
+            }
+            callback(docs);
+            mongoclient.close();
+        });
+    });
+}

@@ -26,17 +26,15 @@ var server = http.createServer(function(request, response) {
 	}
 
 	function getMessages(folder, page) {
-		popemail.checkMail(request, response);
-		popemail.on("end", function() {
-			var messagesList = popemail.messagesList;
+		popemail.getMessages(folder, page, function(docs){
 			var responseInfo = {};
-			responseInfo.messageCount = messagesList.length;
+			responseInfo.messageCount = 100;
 			responseInfo.page = page;
 			responseInfo.pageCount = 10;
 			responseInfo.folder = folder;
 			responseInfo.firstMessage = (page - 1) * 10 + 1;
 			responseInfo.unreadCount = responseInfo.pageCount;
-			responseInfo.messages = messagesList.slice((page - 1) * 10, page * 10);
+			responseInfo.messages = docs;
 			response.setHeader("Content-Type", "application/json");
 			response.writeHead(200, "OK");
 			response.end(JSON.stringify(responseInfo));
