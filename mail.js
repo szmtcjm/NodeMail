@@ -3,124 +3,119 @@ var events = require("events");
 var util = require("util");
 var mimelib = require("mimelib");
 var MongoClient = require('mongodb').MongoClient;
+var Server = require('mongodb').Server;
+var Db = require('mongodb').Db;
+var globalDb = new Db('Mail', new Server('127.0.0.1', 27017), {safe:false});
 var popemail = {};
 var pop3client;
 
 var messagesList = [];
-var mongoclient = new MongoClient(new Server("localhost", 27017), {native_parser: true});
 
-var checkMail = function(request, response) {
-    var hasSend = false;
-    response.on("finish", function(){
-        hasSend = true;
-    });
-
-    mongoclient.on("end", function(){
-        mongoclient.open(function(err, mongoclient) {
-            var db, collection;
-            if (err) {
-                console.log("mongodb error:" + err);
-                throw err;
-            } else {
-                db = mongoclient.db("Mail"),
-                collection = db.collection("messages");
-                collection.insert(messagesList, {w:1}, function(err, result){
-                    if (err) {
-                        console.log("mondb insert error :" + err);
-                    }
-                    mongoclient.close();
-                });
-            }
+function connectToPopServer() {
+    if (!pop3client) {
+        pop3client = new Poplib(995, "pop.163.com", {
+            tlserrs: false,
+            enabletls: true,
+            debug: false
         });
-    });
+    }
+}
+connectToPopServer();
 
-    pop3client = new Poplib(995, "pop.126.com", {
-        tlserrs: false,
-        enabletls: true,
-        debug: false
-    });
+pop3client.on("error", function(err) {
+    if (err.errno === "ETIMEDOUT") {
+        console.log("Unable to connect to server");
+    } else {
+        console.log(err);
+    }
+});
 
-    pop3client.on("error", function(err) {
-        if (err.errno === "ETIMEDOUT") {
-            console.log("Unable to connect to server");
-        } else {
-            console.log(err);
-        }
-        if (!hasSend) {
-            response.setHeader("Content-Type", "application/json");
-            response.writeHead(200, "TIMEOUT");
-            response.end(JSON.stringify(err));
-        }
-    });
+pop3client.on("connect", function() {
+    console.log("CONNECT success");
+    pop3client.login("szmt_cjm@163.com", "cjmcjm");
+});
 
-    pop3client.on("connect", function() {
-        console.log("CONNECT success");
-        pop3client.login("szmtcjm@126.com", "60c78J91m");
-    });
+pop3client.on("login", function(status, rawdata) {
 
-    pop3client.on("login", function(status, rawdata) {
+    if (status) {
+        console.log("LOGIN/PASS success");
+        pop3client.stat();
+    } else {
+        console.log("LOGIN/PASS failed");
+        pop3client.quit();
+    }
+});
 
-        if (status) {
-            console.log("LOGIN/PASS success");
-            pop3client.stat();
-        } else {
-            console.log("LOGIN/PASS failed");
+pop3client.on("list", function(status, msgcount, msgnumber, data, rawdata) {
+    var i;
+    if (status === false) {
+        console.log("LIST failed");
+        pop3client.quit();
+    } else {
+        //pop3client.top(10, 0);
+        console.log("LIST success with " + msgcount + " element(s)");
+    }
+});
+
+pop3client.on("top", function(status, msgnumber, data, rawdata) {
+    if (status === true) {
+        console.log("TOP success for msgnumber " + msgnumber);
+        parseHeader(data, msgnumber);
+        pop3client.dele(msgnumber);
+        if (msgnumber === 1) {
+            insertDb(messagesList.splice(0));
             pop3client.quit();
+            pop3client = undefined;
+            return;
+        } 
+        if (msgnumber % 20 === 0) {
+            insertDb(messagesList.splice(0));
         }
-    });
+        pop3client.top(msgnumber - 1, 0);
+    } else {
+        console.log("TOP failed for msgnumber " + msgnumber);
+        pop3client.quit();
+    }
+});
 
-    pop3client.on("list", function(status, msgcount, msgnumber, data, rawdata) {
-        var i;
-        if (status === false) {
-            console.log("LIST failed");
-            pop3client.quit();
-        } else {
-            //pop3client.top(10, 0);
-            console.log("LIST success with " + msgcount + " element(s)");
-        }
-    });
-
-    pop3client.on("top", function(status, msgnumber, data, rawdata) {
-        if (status === true) {
-            console.log("TOP success for msgnumber " + msgnumber);
-            parseHeader(data, msgnumber);
-            if (msgnumber === 1) {
-                pop3client.quit();
-                mongoclient.emit("end");
-            } else {
-                pop3client.top(msgnumber - 1, 0);
-            }
-        } else {
-            console.log("TOP failed for msgnumber " + msgnumber);
-            pop3client.quit();
-        }
-    });
-
-    pop3client.on("stat", function(status, data, rawdata) {
-        var pattern = /^\+OK\s(\d+)\s(\d+)/;
-        var msgcount;
-        if (status === true) {
-            console.log("STAT success");
-            msgcount = +rawdata.match(pattern)[1];
+pop3client.on("stat", function(status, data, rawdata) {
+    var pattern = /^\+OK\s(\d+)\s(\d+)/;
+    var msgcount;
+    if (status === true) {
+        console.log("STAT success");
+        msgcount = +rawdata.match(pattern)[1];
+        if (msgcount !== 0) {
             pop3client.top(msgcount, 0);
         } else {
-            console.log("STAT failed");
-            pop3client.quit();
+            console.log("There is no message");
         }
-    });
+        
+    } else {
+        console.log("STAT failed");
+        pop3client.quit();
+    }
+});
 
-    pop3client.on("retr", function(status, msgnumber, data, rawdata) {
-        if (status === true) {
-            console.log("RETR success for msgnumber " + msgnumber);
-            parseMessageBody(rawdata);
-        } else {
-            console.log("RETR failed for msgnumber " + msgnumber);
-            pop3client.quit();
-        }
-    });
-}
+pop3client.on("retr", function(status, msgnumber, data, rawdata) {
+    if (status === true) {
+        console.log("RETR success for msgnumber " + msgnumber);
+        parseMessageBody(rawdata);
+    } else {
+        console.log("RETR failed for msgnumber " + msgnumber);
+        pop3client.quit();
+    }
+});
 
-setInterval(checkMail, 3000);
+pop3client.on("dele", function(status, msgnumber, data, rawdata) {
+    if (status == true) {
+        console.log("DELE success for msgnumber " + msgnumber);
+    } else {
+        console.log("DELE failed for msgnumber " + msgnumber);
+        pop3client.quit();
+    }
+});
+
+setInterval(connectToPopServer, 3000);
 
 function parseHeader(rawHeaders, msgnumber) {
     var rawHeadersArray = rawHeaders.split("\r\n"),
@@ -133,9 +128,12 @@ function parseHeader(rawHeaders, msgnumber) {
         rawHeader = rawHeadersArray[i].match(headerPattern);
         if (rawHeader) {
             rawHeader[1] = rawHeader[1].toLowerCase();
+            if (/\./.test(rawHeader[1])) {
+                continue;
+            }
             if (rawHeader[3] === "B") {
                 returnHeaders[rawHeader[1]] = mimelib.decodeBase64(rawHeader[4], rawHeader[2]);
-            } else if (rawHeader[3] === "Q"){
+            } else if (rawHeader[3] === "Q") {
                 returnHeaders[rawHeader[1]] = mimelib.decodeQuotedPrintable(rawHeader[4], rawHeader[2]); //quoted-printable 
             } else {
                 returnHeaders[rawHeader[1]] = rawHeader[4]; //未编码
@@ -144,26 +142,48 @@ function parseHeader(rawHeaders, msgnumber) {
     }
     returnHeaders.unread = true;
     returnHeaders.folder = "1";
-    messagesList[msgnumber - 1] = returnHeaders;
+    messagesList.push(returnHeaders);
 }
 
 function parseMessageBody(rawBody) {}
 
+
+function insertDb(msg) {
+    globalDb.open(function(err, db) {
+        if (err) {
+            console.log("mongodb:" + err);
+            return;
+        }
+        var collection = db.collection("messages");
+        collection.insert(msg, function(err, result) {
+            if (err) {
+                console.log("insert error: " + err);
+            }
+            globalDb.close();
+        });
+    });
+}
+
 exports.getMessages = function(folder, page, callback) {
-    mongoclient.open(function(err, mongoclient) {
+    globalDb.open(function(err, db) {
         if (err) {
             console.log("mongodb connect error: " + err);
             return;
         }
-        db = mongoclient.db("Mail"),
-        collection = db.collection("messages");
-        collection.find({folder: folder}, { "limit": 10, "skip": (page - 1) * 10}).toArray(function(err, docs){
+        var collection = db.collection("messages");
+        collection.find({
+            folder: folder
+        }, {
+            "limit": 10,
+            "skip": (page - 1) * 10
+        }).toArray(function(err, docs) {
             if (err) {
                 console.log("mongodb find eror: " + err);
+                globalDb.close();
                 return;
             }
             callback(docs);
-            mongoclient.close();
+            globalDb.close();
         });
     });
 }
