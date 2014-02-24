@@ -61,17 +61,17 @@ pop3client.on("top", function(status, msgnumber, data, rawdata) {
     if (status === true) {
         console.log("TOP success for msgnumber " + msgnumber);
         parseHeader(data, msgnumber);
-        pop3client.dele(msgnumber);
         if (msgnumber === 1) {
             insertDb(messagesList.splice(0));
             pop3client.quit();
             pop3client = undefined;
             return;
-        } 
+        }
         if (msgnumber % 20 === 0) {
             insertDb(messagesList.splice(0));
         }
         pop3client.top(msgnumber - 1, 0);
+        pop3client.dele(msgnumber);
     } else {
         console.log("TOP failed for msgnumber " + msgnumber);
         pop3client.quit();
@@ -111,9 +111,33 @@ pop3client.on("dele", function(status, msgnumber, data, rawdata) {
         console.log("DELE success for msgnumber " + msgnumber);
     } else {
         console.log("DELE failed for msgnumber " + msgnumber);
-        pop3client.quit();
+        //pop3client.quit();
     }
 });
+
+pop3client.on("noop", function(status, rawdata) {
+
+    if (status) {
+
+        console.log("NOOP success");
+        //client.stat();
+
+    } else {
+
+        console.log("NOOP failed");
+        //client.quit();
+
+    }
+
+});
+
+pop3client.on("locked", function(cmd) {
+    console.log("Current command has not finished yet. You tried calling " + cmd);
+});
+pop3client.on("invalid-state", function(cmd) {
+    console.log("Invalid state. You tried calling " + cmd);
+});
+
 
 setInterval(connectToPopServer, 3000);
 
