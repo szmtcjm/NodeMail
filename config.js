@@ -10,7 +10,8 @@ exports.Welcome = {
 };
 exports.action = {
 	getFolder: "getFolder",
-	getmessage: "getMessageBody"
+	getmessage: "getMessageBody",
+	login: "login"
 }
 
 exports.mailUserName = {

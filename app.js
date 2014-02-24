@@ -5,6 +5,7 @@ var config = require("./config");
 var staticServer = require("./staticServer");
 var action = require("./action");
 var popemail = require("./mail");
+var login = require("./login");
 
 var server = http.createServer(function(request, response) {
 	var urlParsed = url.parse(request.url, true);
@@ -21,6 +22,16 @@ var server = http.createServer(function(request, response) {
 		}
 	} else if (pathname.slice(1) === config.action.listMessages) {
 		popemail.listMessages();
+	} else if (pathname.slice(1) === config.action.login) {
+		login.verifyUser(userID, function(success) {
+			if (success) {
+				response.setHeader("Content-Type", "application/json");
+				response.writeHead(200, "OK");
+				response.end(JSON.stringify({success:true}));
+			} else {
+				response.setHeader
+			}
+		});
 	} else {
 		staticServer(request, response);
 	}

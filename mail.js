@@ -2,7 +2,6 @@ var Poplib = require("poplib");
 var events = require("events");
 var util = require("util");
 var mimelib = require("mimelib");
-var MongoClient = require('mongodb').MongoClient;
 var Server = require('mongodb').Server;
 var Db = require('mongodb').Db;
 var globalDb = new Db('Mail', new Server('127.0.0.1', 27017), {safe:false});
