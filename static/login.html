@@ -232,7 +232,7 @@ fieldset {
 </style>
 </head>
 <body>
-<form method="post" action="/login">
+<form>
 <div id="login">  
         <h1>Log In</h1>  
         <fieldset id="inputs">  
@@ -248,5 +248,14 @@ fieldset {
     </div>  
 </form>
 </body>
-<script type="text/javascript" src="js/login.js"></script>
+<script type="text/javascript" src="frontlib/seajs/seajs/2.1.0/sea.js"></script>
+<script type="text/javascript">
+        seajs.config({
+            base: "/js/",
+            alias: {
+                "jquery": "frontlib/jquery/jquery-2.0.3.min.js",
+            }
+        });
+        seajs.use('/js/login.js');
+</script>
 </html>
