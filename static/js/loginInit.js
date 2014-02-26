@@ -7,14 +7,15 @@ define(function(require, exports, moudle) {
 		$.ajax({
 			url: "/login",
 			type: "POST",
-			//dataType: "json",
+			dataType: "json",
 			data: {
 				user: $("#userName").val(),
 				password: $("#passWord").val()
 			}
 		})
 			.done(function(data, textStatus, jqXHR) {
-				if (data.success === "ture") {
+				if (data.success) {
+					alert($("#userName").val())
 					cookie.setCookie("user", $("#userName").val(), {
 						expires: 10,
 					});

@@ -29,8 +29,7 @@ var PORT = 8000,
 				postData += postDataChunk;
 			});
 			request.on("end", function() {
-				var userID = querystring.parse(postData).user;
-				login.verifyUser(userID, function(success) {
+				login.verifyUser(querystring.parse(postData), function(success) {
 					response.setHeader("Content-Type", "application/json");
 					response.writeHead(200, "OK");
 					response.end(JSON.stringify({

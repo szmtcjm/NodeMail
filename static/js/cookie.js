@@ -24,11 +24,12 @@ define(function(require, exports, moudle) {
 		if (option.expires) {
 			date = new Date();
 			date.setTime(date.getTime() + option.expires * 24 * 3600 * 1000);
-			cookie = cookie + ";expires=" + date.toGMTString();
+			cookie += ";expires=" + date.toGMTString();
 		}
-		cookie = cookie + option.domain ? (";domain=" + option.domain) : "";
-		cookie = cookie + option.path ? (";path=" + option.path) : "";
-		cookie = cookie + option.secure ? ";secure" : "";
+		cookie += option.domain ? ";domain=" + option.domain : "";
+		cookie += option.path ? ";path=" + option.path) : "";
+		cookie += option.secure ? ";secure" : "";
+		console.log(cookie);
 		document.cookie = cookie;
 	};
 });
