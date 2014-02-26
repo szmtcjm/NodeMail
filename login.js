@@ -16,6 +16,7 @@ exports.verifyUser = function(userID, callback) {
         	} else {
         		callback(true);
         	}
+            globalDb.close();
         });
 	});
-}
+};
