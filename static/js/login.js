@@ -3,8 +3,9 @@ define(function(require, exports, moudle) {
 	var cookie = require("./cookie");
 
 	exports.checkLogin = function() {
-		if (cookie.getCookie("user")) {
-			alert("logined");
+		var user = cookie.getCookie("user");
+		if (user) {
+			$("#divUser").text(user);
 		} else {
 			location = "/login.html";
 		}

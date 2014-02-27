@@ -27,7 +27,7 @@ define(function(require, exports, moudle) {
 			cookie += ";expires=" + date.toGMTString();
 		}
 		cookie += option.domain ? ";domain=" + option.domain : "";
-		cookie += option.path ? ";path=" + option.path) : "";
+		cookie += option.path ? ";path=" + option.path : "";
 		cookie += option.secure ? ";secure" : "";
 		console.log(cookie);
 		document.cookie = cookie;
