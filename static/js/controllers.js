@@ -1,5 +1,5 @@
-var mailView = angular.module('mailView', ['mailServices']);
-mailView.config('$routeProvider', function($routeProvider) {
+var mailView = angular.module('mailView', ['ngRoute', 'mailServices']);
+mailView.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.
 		when('/inbox', {
         	templateUrl: 'partials/inbox.html',
@@ -9,15 +9,19 @@ mailView.config('$routeProvider', function($routeProvider) {
 			templateUrl: 'partials/readMail.html',
         	controller: 'readMailCtrl'
 		}).
-		when('/composeMail', {
-			templateUrl: 'partials/composeMail.html',
+		when('/compose', {
+			templateUrl: 'partials/compose.html',
         	controller: 'composeMailCtrl'
 		}).
 		otherwise({redirectTo: '/inbox'});
-});
+}]);
 
-mailView.controller('inboxCtrl', ['$scope', 'code', function($scope, code) {
-	$scope.messages = [];
+mailView.controller('inboxCtrl', ['$scope', 'code', 'request', function($scope, code, request) {
+	$scope.messages = [{from: 'cjm', subject: 'fuck', date: '2014-04-01'}, 
+					   {from: 'cjm2', subject: 'fuck2', date: '2014-04-02'}];
+	$scope.deleteMail = function(index) {
+		$scope.messages.splice(index, 1);
+	} 
 	$scope.cleanupEmail = code.cleanupEmail;
 	$scope.htmlEncode = code.htmlEncode;
 	$scope.encodeBody = code.encodeBody;

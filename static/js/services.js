@@ -1,6 +1,6 @@
 var mailServices = angular.module('mailServices', []);
 
-mailServices.factory('request', ['$http', function() {
+mailServices.factory('request', ['$http', function($http) {
     return function(args, sAction, folder, page, sId, fnCallback, context) {
         var sURL = args.sAction + "?folder=" + args.folder + "&page=" + args.page;
         if (args.sId) {

@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html ng-app="">
+<!doctype html>
+<html ng-app="mailView">
 <head>
   <title>Ajax Mail</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
@@ -7,25 +7,17 @@
 </head>
 <body>       
   <ul id="ulMainMenu">
-    <li id="liCompose"><a class="link" id="spnCompose" href="compose">写邮件</a></li>
-    <li><a class="link" id="spnInbox" href="inbox">收件箱<a id="spnUnreadMail"></a></a></li>
-    <li><a class="link" id="spnTrash" href="trash">垃圾箱</a> (<a class="link" id="spnEmpty">清空</a>)</li>
+    <li id="liCompose"><a class="link" id="spnCompose" href="#/compose">写邮件</a></li>
+    <li><a class="link" id="spnInbox" href="#/inbox">收件箱</a></li>
+    <li><a class="link" id="spnTrash" href="#/trash">垃圾箱</a> (<a class="link" id="spnEmpty">清空</a>)</li>
   </ul>
   <div id="divUser"></div>
   <div id="divNotice"></div>
       
   <div ng-view></div>
-
-      <iframe id="iLoader" src="about:blank"></iframe>
-  </body>
-  <script type="text/javascript" src="frontlib/seajs/seajs/2.1.0/sea.js"></script>
-  <script type="text/javascript">
-      seajs.config({
-          base: "/js/",
-          alias: {
-              "jquery": "frontlib/jquery/jquery-2.0.3.min.js",
-          }
-      });
-      seajs.use('/js/main');
-  </script>
+</body>
+<script src="frontlib/angular/angular.min.js"></script>
+<script src="frontlib/angular/angular-route.min.js"></script>
+<script src="js/controllers.js"></script>
+<script src="js/services.js"></script>
 </html>
