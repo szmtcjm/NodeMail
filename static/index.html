@@ -1,117 +1,31 @@
 <!DOCTYPE html>
 <html ng-app="">
-    <head>
-        <title>Ajax Mail</title>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-        <link rel="stylesheet" type="text/css" href="styles/AjaxMail.css" />
-    </head>
-    <body>       
-        <ul id="ulMainMenu">
-            <li id="liCompose"><span class="link" id="spnCompose">写邮件</span></li>
-            <li><span class="link" id="spnInbox">收件箱<span id="spnUnreadMail"></span></span></li>
-            <li><span class="link" id="spnTrash">垃圾箱</span> (<span class="link" id="spnEmpty">清空</span>)</li>
-        </ul>
-        <div id="divUser"></div>
-        <div id="divNotice"></div>
-        <div id="divFolder">            
-            <div id="divFolderHeader" class="header">
-                 <h1 id="hFolderTitle">收件箱</h1>
-                 <div id="divFolderStatus" class="status">正在加载...</div>
-                 <div id="divItemCount"><img src="images/btn_prev.gif" alt="Previous Page" title="Previous Page" id="imgPrev" /><span id="spnItems"></span><img src="images/btn_next.gif" alt="Next Page" title="Next Page" id="imgNext" /></div>
-            </div>
-            <table border="0" cellpadding="0" cellspacing="0" id="tblMain">
-                <thead>
-                    <tr id="trTemplate">
-                        <td><img src="images/icon_delete.gif" /></td>
-                        <td class="from"></td>
-                        <td class="attachment"><img src="images/icon_attachment.gif" title="Attachment" /></td>
-                        <td class="subject"></td>
-                        <td class="date" nowrap="nowrap"></td>
-                    </tr>       
-                    <tr id="trNoMessages">
-                        <td colspan="5">There are no messages in this folder.</td>
-                    </tr>         
-                </thead>
-                <tbody>
-                    <tr style="visibility: hidden">
-                        <td colspan="5"></td>
-                    </tr>                    
-                </tbody>
-            </table>
-        </div>  
-        <div id="divReadMail" style="display: none">
-            <div class="header">
-                 <h1 id="hSubject"></h1>
-            </div>
-             <div class="message-headers">
-                 <div id="divMessageFrom"></div>
-                 <div id="divMessageDate"></div>
-             </div>    
-             <div id="divMessageTo"></div>
-             <div id="divMessageCC"></div>    
-             <div id="divMessageBCC"></div>
-             <ul class="message-actions">
-                 <li><span class="link" id="spnReply">Reply</span></li>
-                 <li><span class="link" id="spnReplyAll">Reply All</span></li>
-                 <li><span class="link" id="spnForward">Forward</span></li>  
-                 <li id="liAttachments"><a href="#attachments">View Attachments</a></li>                                              
-             </ul>             
-            <div id="divMessageBody"></div>
-            <a name="attachments" id="aAttachments">Attachments</a>
-            <div id="divMessageAttachments">
-                <ul id="ulAttachments">
-                </ul>
-            </div>
+<head>
+  <title>Ajax Mail</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" type="text/css" href="styles/AjaxMail.css" />
+</head>
+<body>       
+  <ul id="ulMainMenu">
+    <li id="liCompose"><a class="link" id="spnCompose" href="compose">写邮件</a></li>
+    <li><a class="link" id="spnInbox" href="inbox">收件箱<a id="spnUnreadMail"></a></a></li>
+    <li><a class="link" id="spnTrash" href="trash">垃圾箱</a> (<a class="link" id="spnEmpty">清空</a>)</li>
+  </ul>
+  <div id="divUser"></div>
+  <div id="divNotice"></div>
+      
+  <div ng-view></div>
 
-        </div>        
-               
-        <div id="divComposeMail" style="display: none">
-            <div class="header">
-                 <h1 id="hComposeHeader">Compose Mail</h1>
-            </div>
-            <div id="divComposeMailForm">
-             <ul id="ulComposeActions" class="message-actions">
-                 <li><span class="link" id="spnSend">Send</span></li>
-                 <li><span class="link" id="spnCancel">Cancel</span></li>                
-             </ul>             
-             <div id="divComposeBody">
-                 <form method="post" name="frmSendMail">
-                     <table border="0" cellpadding="0" cellspacing="0">
-                         <tr>
-                             <td class="field-label-container"><label for="txtTo" class="field-label">To:</label></td>
-                             <td class="field-container"><textarea rows="2" cols="30" id="txtTo" name="txtTo" class="form-field"></textarea></td>
-                         </tr>
-                         <tr>
-                             <td class="field-label-container"><label for="txtCC" class="field-label">CC:</label></td>
-                             <td class="field-container"><textarea rows="2" cols="30" id="txtCC" name="txtCC" class="form-field"></textarea></td>
-                         </tr>
-                         <a href="javascript:void(0)" onclick="addCC();">add CC</a>
-                         <tr>
-                             <td class="field-label-container"><label for="txtSubject" class="field-label">Subject:</label></td>
-                             <td class="field-container"><input type="text" id="txtSubject" name="txtSubject"  class="form-field" /></td>
-                         </tr>
-                         <tr>
-                             <td class="message-container" colspan="2"><textarea id="txtMessage" name="txtMessage" rows="15" cols="30" class="form-field"></textarea></td>
-                         </tr>
-                     </table>
-                 </form>             
-             </div>
-             </div>
-             <div id="divComposeMailStatus" style="display: none">
-                 <h2>Sending...</h2>
-                 <img src="images/sendmail.gif" />
-             </div>
-        </div>                
-        <iframe id="iLoader" src="about:blank"></iframe>
-    </body>
-    <script type="text/javascript" src="frontlib/seajs/seajs/2.1.0/sea.js"></script>
-    <script type="text/javascript">
-        seajs.config({
-            base: "/js/",
-            alias: {
-                "jquery": "frontlib/jquery/jquery-2.0.3.min.js",
-            }
-        });
-        seajs.use('/js/main');
-    </script>
+      <iframe id="iLoader" src="about:blank"></iframe>
+  </body>
+  <script type="text/javascript" src="frontlib/seajs/seajs/2.1.0/sea.js"></script>
+  <script type="text/javascript">
+      seajs.config({
+          base: "/js/",
+          alias: {
+              "jquery": "frontlib/jquery/jquery-2.0.3.min.js",
+          }
+      });
+      seajs.use('/js/main');
+  </script>
 </html>

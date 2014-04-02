@@ -1,0 +1,37 @@
+<div id="divComposeMail" style="display: none">
+  <div class="header">
+    <h1 id="hComposeHeader">Compose Mail</h1>
+  </div>
+  <div id="divComposeMailForm">
+    <ul id="ulComposeActions" class="message-actions">
+      <li><span class="link" id="spnSend">Send</span></li>
+      <li><span class="link" id="spnCancel">Cancel</span></li>                
+    </ul>             
+  <div id="divComposeBody">
+    <form method="post" name="frmSendMail">
+      <table border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td class="field-label-container"><label for="txtTo" class="field-label">To:</label></td>
+          <td class="field-container"><textarea rows="2" cols="30" id="txtTo" name="txtTo" class="form-field"></textarea></td>
+        </tr>
+        <tr>
+          <td class="field-label-container"><label for="txtCC" class="field-label">CC:</label></td>
+          <td class="field-container"><textarea rows="2" cols="30" id="txtCC" name="txtCC" class="form-field"></textarea></td>
+        </tr>
+        <a href="javascript:void(0)" onclick="addCC();">add CC</a>
+        <tr>
+          <td class="field-label-container"><label for="txtSubject" class="field-label">Subject:</label></td>
+          <td class="field-container"><input type="text" id="txtSubject" name="txtSubject"  class="form-field" /></td>
+        </tr>
+        <tr>
+          <td class="message-container" colspan="2"><textarea id="txtMessage" name="txtMessage" rows="15" cols="30" class="form-field"></textarea></td>
+        </tr>
+      </table>
+    </form>             
+  </div>
+  </div>
+  <div id="divComposeMailStatus" style="display: none">
+    <h2>Sending...</h2>
+    <img src="images/sendmail.gif" />
+  </div>
+</div>    
