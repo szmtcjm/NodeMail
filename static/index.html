@@ -6,9 +6,9 @@
   <link rel="stylesheet" type="text/css" href="styles/AjaxMail.css" />
 </head>
 <body>       
-  <ul id="ulMainMenu">
+  <ul id="ulMainMenu" ng-controller="filesCtrl">
     <li id="liCompose"><a class="link" id="spnCompose" href="#/compose">写邮件</a></li>
-    <li><a class="link" id="spnInbox" href="#/inbox">收件箱</a></li>
+    <li><a class="link" id="spnInbox" href="#/inbox" ng-click="refreshInbox()">收件箱</a></li>
     <li><a class="link" id="spnTrash" href="#/trash">垃圾箱</a> (<a class="link" id="spnEmpty">清空</a>)</li>
   </ul>
   <div id="divUser"></div>

@@ -16,9 +16,21 @@ mailView.config(['$routeProvider', function($routeProvider) {
 		otherwise({redirectTo: '/inbox'});
 }]);
 
-mailView.controller('inboxCtrl', ['$scope', 'code', 'request', function($scope, code, request) {
-	$scope.messages = [{from: 'cjm', subject: 'fuck', date: '2014-04-01'}, 
-					   {from: 'cjm2', subject: 'fuck2', date: '2014-04-02'}];
+mailView.controller('filesCtrl', ['$scope', 'messages', '$http', function($scope, messages, $http) {
+	$scope.refreshInbox = function() {
+		messages.refresh('1', '1');
+		console.log(1)
+	}
+
+	$scope.refreshInbox();
+}]);
+
+mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', function($scope, code, request, messages) {
+	$scope.messages = messages.messages;
+	$scope.$on('messages.refresh', function(event) {
+		$scope.messages = messages.messages;
+	});
+	setTimeout(function() {console.log(messages.messages)}, 4000);
 	$scope.deleteMail = function(index) {
 		$scope.messages.splice(index, 1);
 	} 

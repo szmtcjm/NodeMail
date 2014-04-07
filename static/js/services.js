@@ -1,5 +1,20 @@
 var mailServices = angular.module('mailServices', []);
 
+mailServices.factory('messages', ['$http', '$rootScope', function($http, $rootScope) {
+    var service = {
+        messages: [],
+        refresh: function(folder, page) {
+            var url = '/getFolder?folder='+ folder + '&page=' + page; 
+            $http.get(url)
+                .success(function(data, status, headers, config) {
+                    service.messages = data.messages;
+                    $rootScope.$broadcast('messages.refresh');
+                });
+        }
+    }
+    return service;
+}]);
+
 mailServices.factory('request', ['$http', function($http) {
     return function(args, sAction, folder, page, sId, fnCallback, context) {
         var sURL = args.sAction + "?folder=" + args.folder + "&page=" + args.page;
