@@ -187,7 +187,7 @@ function insertDb(msg) {
     });
 }
 
-exports.getMessages = function(folder, page, callback) {
+exports.getMessages = function(folder, page, unread, callback) {
     globalDb.open(function(err, db) {
         if (err) {
             console.log("mongodb connect error: " + err);
@@ -195,7 +195,8 @@ exports.getMessages = function(folder, page, callback) {
         }
         var collection = db.collection("messages");
         collection.find({
-            folder: folder
+            folder: folder,
+            unread: unread ? true : false
         }, {
             "limit": 10,
             "skip": (page - 1) * 10

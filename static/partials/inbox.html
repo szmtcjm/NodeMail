@@ -1,6 +1,6 @@
 <div id="divFolder">
   <div id="divFolderHeader" class="header">
-    <h1 id="hFolderTitle">收件箱</h1>(<label for="unread">未读</label><input type="checkbox" id="unread">)
+    <h1 id="hFolderTitle">收件箱</h1><label for="unread">(未读)</label><input type="checkbox" id="unread" ng-model="unreadCheckbox"  ng-change="unreadOnchange();">
     <div id="divItemCount"><input type="button" title="Previous Page" id="imgPrev" ng-click="prePage()"/><span id="spnItems"></span><img src="images/btn_next.gif" alt="Next Page" title="Next Page" id="imgNext" /></div>
   </div>
   <table border="0" cellpadding="0" cellspacing="0" id="tblMain">

@@ -32,7 +32,6 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 		$scope.page = 1;
 		$scope.pageCount = 10;
 	});
-	setTimeout(function() {console.log(messages.messages)}, 4000);
 	$scope.deleteMail = function(index) {
 		$scope.messages.splice(index, 1);
 	} 
@@ -40,11 +39,10 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 	$scope.htmlEncode = code.htmlEncode;
 	$scope.encodeBody = code.encodeBody;
 
-	$scope.unreadchange = function() {
-		if ($scope.unreadcheck) {
-			request
-			$scope.messages = $filter($scope.messages, $scope.messages.unread);
-		} 
+	$scope.unreadOnchange = function() {
+		request({action: 'getFolder', folder: 1, page: 1, unread: $scope.unreadCheckbox ? true : false}, function(data, header) {
+			$scope.messages = data.messages;
+		});
 	}
 
 	$scope.prePage = function() {

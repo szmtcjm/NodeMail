@@ -15,7 +15,8 @@ var PORT = 8000,
 
 		if (pathname.slice(1) === config.action.getFolder) {
 			if (theQueryString.folder) {
-				getMessages(theQueryString.folder, theQueryString.page);
+				console.log(theQueryString.unread);
+				getMessages(theQueryString.folder, theQueryString.page, theQueryString.unread);
 			}
 		} else if (pathname.slice(1) === config.action.getMessageBody) {
 			if (theQueryString.msgNumber) {
@@ -41,8 +42,8 @@ var PORT = 8000,
 			staticServer(request, response);
 		}
 
-		function getMessages(folder, page) {
-			popemail.getMessages(folder, page, function(docs) {
+		function getMessages(folder, page, unread) {
+			popemail.getMessages(folder, page, unread, function(docs) {
 				var responseInfo = {};
 				responseInfo.messageCount = 100;
 				responseInfo.page = page;

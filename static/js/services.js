@@ -21,7 +21,7 @@ mailServices.factory('request', ['$http', function($http) {
             sURL += "&id=" + filter.sId;
         } 
         if (filter.unread) {
-            sURL += 'unread'
+            sURL += '&unread=true'
         }
         $http({method: 'GET', url: sURL}).
             success(function(data, status, headers, config) {
