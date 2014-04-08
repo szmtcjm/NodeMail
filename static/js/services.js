@@ -1,33 +1,39 @@
 var mailServices = angular.module('mailServices', []);
 
-mailServices.factory('messages', ['$http', '$rootScope', function($http, $rootScope) {
+mailServices.factory('messages', ['$http', '$rootScope', 'request', function($http, $rootScope, request) {
     var service = {
         messages: [],
         refresh: function(folder, page) {
-            var url = '/getFolder?folder='+ folder + '&page=' + page; 
-            $http.get(url)
-                .success(function(data, status, headers, config) {
-                    service.messages = data.messages;
-                    $rootScope.$broadcast('messages.refresh');
-                });
+            var url = '/getFolder?folder='+ folder + '&page=' + page;
+            request({action: 'getFolder', folder: folder, page: page}, function(data, headers) {
+                service.messages = data.messages;
+                $rootScope.$broadcast('messages.update');
+            });
         }
     }
     return service;
 }]);
 
 mailServices.factory('request', ['$http', function($http) {
-    return function(args, sAction, folder, page, sId, fnCallback, context) {
-        var sURL = args.sAction + "?folder=" + args.folder + "&page=" + args.page;
-        if (args.sId) {
-            sURL += "&id=" + args.sId;
+    return function(filter, callback) {
+        var sURL = filter.action + "?folder=" + filter.folder + "&page=" + filter.page;
+        if (filter.sId) {
+            sURL += "&id=" + filter.sId;
+        } 
+        if (filter.unread) {
+            sURL += 'unread'
         }
         $http({method: 'GET', url: sURL}).
             success(function(data, status, headers, config) {
-                if (jqXHR.statusText === "OK") {
-                    fnCallback.call(context, data);
+                console.log(headers);
+                if (typeof(callback) === 'function') {
+                    callback(data, headers);
+                }
+                /*if (jqXHR.statusText === "OK") {
+                    fnCallback.call(filter.context, data);
                 } else if (jqXHR.statusText === "TIMEOUT") {
                     that.showNotice("error", "请求超时");
-                }
+                }*/
             }).
             error(function(data, status, headers, config) {
      

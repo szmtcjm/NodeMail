@@ -25,10 +25,12 @@ mailView.controller('filesCtrl', ['$scope', 'messages', '$http', function($scope
 	$scope.refreshInbox();
 }]);
 
-mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', function($scope, code, request, messages) {
+mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$filter', function($scope, code, request, messages, $filter) {
 	$scope.messages = messages.messages;
-	$scope.$on('messages.refresh', function(event) {
+	$scope.$on('messages.update', function(event) {
 		$scope.messages = messages.messages;
+		$scope.page = 1;
+		$scope.pageCount = 10;
 	});
 	setTimeout(function() {console.log(messages.messages)}, 4000);
 	$scope.deleteMail = function(index) {
@@ -37,6 +39,36 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', funct
 	$scope.cleanupEmail = code.cleanupEmail;
 	$scope.htmlEncode = code.htmlEncode;
 	$scope.encodeBody = code.encodeBody;
+
+	$scope.unreadchange = function() {
+		if ($scope.unreadcheck) {
+			request
+			$scope.messages = $filter($scope.messages, $scope.messages.unread);
+		} 
+	}
+
+	$scope.prePage = function() {
+		if ($scope.page === 1) {
+			return;
+		} else {
+
+		}
+
+	}
+
+	$scope.nextPage = function() {
+		if ($scope.page === Math.ceil($scope.messages.length / 10)) {
+			return;
+		} else {
+			request({action: 'getFolder', folder: 1, page: 1, fnCallback: callback});
+		}
+
+		function callback(content, data) {
+
+		}
+	}
+
+
 }]);
 
 mailView.controller('readMailCtrl', ['$scope', function($scope) {
