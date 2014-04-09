@@ -2,11 +2,13 @@ var mailServices = angular.module('mailServices', []);
 
 mailServices.factory('messages', ['$http', '$rootScope', 'request', function($http, $rootScope, request) {
     var service = {
+        totalCount: 0,
         messages: [],
         refresh: function(folder, page) {
             var url = '/getFolder?folder='+ folder + '&page=' + page;
             request({action: 'getFolder', folder: folder, page: page}, function(data, headers) {
                 service.messages = data.messages;
+                service.totalCount = data.count;
                 $rootScope.$broadcast('messages.update');
             });
         }

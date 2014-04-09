@@ -27,10 +27,10 @@ mailView.controller('filesCtrl', ['$scope', 'messages', '$http', function($scope
 
 mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$filter', function($scope, code, request, messages, $filter) {
 	$scope.messages = messages.messages;
+	$scope.totalCount = messages.totalCount;
 	$scope.$on('messages.update', function(event) {
 		$scope.messages = messages.messages;
-		$scope.page = 1;
-		$scope.pageCount = 10;
+		$scope.totalCount = messages.totalCount;
 	});
 	$scope.deleteMail = function(index) {
 		$scope.messages.splice(index, 1);
@@ -41,7 +41,8 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 
 	$scope.unreadOnchange = function() {
 		request({action: 'getFolder', folder: 1, page: 1, unread: $scope.unreadCheckbox ? true : false}, function(data, header) {
-			$scope.messages = data.messages;
+			$scope.messages = messages.messages = data.messages;
+			$scope.totalCount = messages.totalCount = data.count;
 		});
 	}
 

@@ -193,21 +193,47 @@ exports.getMessages = function(folder, page, unread, callback) {
             console.log("mongodb connect error: " + err);
             return;
         }
-        var collection = db.collection("messages");
-        collection.find({
-            folder: folder,
-            unread: unread ? true : false
-        }, {
-            "limit": 10,
-            "skip": (page - 1) * 10
-        }).toArray(function(err, docs) {
+        var collection = db.collection("messages"),
+            filter = unread ? {folder: folder, unread: true} : {folder: folder};
+        
+        collection.count(filter, function(err, count) {
             if (err) {
-                console.log("mongodb find eror: " + err);
+                console.log("mongodb count error: " + err);
                 globalDb.close();
                 return;
             }
-            callback(docs);
-            globalDb.close();
+            collection.find(filter, {
+                "limit": 10,
+                "skip": (page - 1) * 10
+            }).toArray(function(err, docs) {
+                if (err) {
+                    console.log("mongodb find eror: " + err);
+                    globalDb.close();
+                    return;
+                }
+                callback(docs, count);
+                globalDb.close();
+            });
         });
     });
 }
+
+exports.getMessagesCount = function(folder, unread, callback) {
+    globalDb.open(function(err, db) {
+        if (err) {
+            console.log("mongodb connect error: " + err);
+            return;
+        }
+        var collection = db.collection("messages"),
+            filter = unread ? {folder: folder, unread: true} : {folder: folder};
+        collection.count(filter, function(err, count) {
+            if (err) {
+                console.log("mongodb count error: " + err);
+                globalDb.close();
+                return;
+            }
+
+
+        });
+    });
+};
