@@ -11,6 +11,7 @@ exports.Welcome = {
 exports.action = {
 	getFolder: "getFolder",
 	getmessage: "getMessageBody",
+	deleteMail: "deleteMail",
 	login: "login"
 }
 

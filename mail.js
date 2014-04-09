@@ -203,37 +203,37 @@ exports.getMessages = function(folder, page, unread, callback) {
                 return;
             }
             collection.find(filter, {
-                "limit": 10,
-                "skip": (page - 1) * 10
+                "limit": 2,
+                "skip": (page - 1) * 2
             }).toArray(function(err, docs) {
+                globalDb.close();
                 if (err) {
                     console.log("mongodb find eror: " + err);
-                    globalDb.close();
                     return;
                 }
                 callback(docs, count);
-                globalDb.close();
             });
         });
     });
 }
 
-exports.getMessagesCount = function(folder, unread, callback) {
+exports.deleteMail = function(id, callback) {
     globalDb.open(function(err, db) {
         if (err) {
             console.log("mongodb connect error: " + err);
             return;
         }
-        var collection = db.collection("messages"),
-            filter = unread ? {folder: folder, unread: true} : {folder: folder};
-        collection.count(filter, function(err, count) {
+        var collection = db.collection("messages");
+        collection.remove({id: parseInt(id)}, {w: 1}, function(err, numberOfRemovedDocs){
+            globalDb.close();
             if (err) {
-                console.log("mongodb count error: " + err);
-                globalDb.close();
+                console.log("mongodb remove eror: " + err);
                 return;
             }
-
-
+            console.log(id)
+            if (typeof(callback) === 'function') {
+                callback();
+            };
         });
     });
-};
+}

@@ -71,6 +71,10 @@ h1 {
     float: left;
 }
 
+#messageCount {
+    font-size: 70%;
+}
+
 div.status {
     float: left;
     font-size: 60%;

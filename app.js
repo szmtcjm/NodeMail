@@ -6,7 +6,7 @@ var PORT = 8000,
 	action = require("./action"),
 	popemail = require("./mail"),
 	login = require("./login"),
-	querystring = require("querystring");
+	querystring = require("querystring"),
 	server = http.createServer(function(request, response) {
 		var urlParsed = url.parse(request.url, true),
 			pathname = urlParsed.pathname,
@@ -14,15 +14,13 @@ var PORT = 8000,
 			postData;
 
 		if (pathname.slice(1) === config.action.getFolder) {
-			if (theQueryString.folder) {
-				getMessages(theQueryString.folder, theQueryString.page, theQueryString.unread);
-			}
+			getMessages(theQueryString);
 		} else if (pathname.slice(1) === config.action.getMessageBody) {
 			if (theQueryString.msgNumber) {
 				getMessageBody(theQueryString.msgNumber);
 			}
-		} else if (pathname.slice(1) === config.action.listMessages) {
-			popemail.listMessages();
+		} else if (pathname.slice(1) === config.action.deleteMail) {
+			deleteMail(theQueryString);
 		} else if (pathname.slice(1) === config.action.login) {
 			postData = "";
 			request.on("data", function(postDataChunk) {
@@ -41,14 +39,20 @@ var PORT = 8000,
 			staticServer(request, response);
 		}
 
-		function getMessages(folder, page, unread) {
-			popemail.getMessages(folder, page, unread, function(docs, count) {
+		function deleteMail(theQueryString) {
+			popemail.deleteMail(theQueryString.id, function() {
+				getMessages(theQueryString);
+			});
+		}
+
+		function getMessages(theQueryString) {
+			popemail.getMessages(theQueryString.folder, theQueryString.page, theQueryString.unread, function(docs, count) {
 				var responseInfo = {};
 				responseInfo.messageCount = count;
-				responseInfo.page = page;
+				responseInfo.page = theQueryString.page;
 				responseInfo.pageCount = 10;
-				responseInfo.folder = folder;
-				responseInfo.firstMessage = (page - 1) * 10 + 1;
+				responseInfo.folder = theQueryString.folder;
+				responseInfo.firstMessage = (theQueryString.page - 1) * 10 + 1;
 				responseInfo.unreadCount = responseInfo.pageCount;
 				responseInfo.messages = docs;
 				response.setHeader("Content-Type", "application/json");

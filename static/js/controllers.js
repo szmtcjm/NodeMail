@@ -26,48 +26,48 @@ mailView.controller('filesCtrl', ['$scope', 'messages', '$http', function($scope
 }]);
 
 mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$filter', function($scope, code, request, messages, $filter) {
-	$scope.messages = messages.messages;
-	$scope.totalCount = messages.totalCount;
-	$scope.$on('messages.update', function(event) {
-		$scope.messages = messages.messages;
-		$scope.totalCount = messages.totalCount;
-	});
-	$scope.deleteMail = function(index) {
-		$scope.messages.splice(index, 1);
-	} 
 	$scope.cleanupEmail = code.cleanupEmail;
 	$scope.htmlEncode = code.htmlEncode;
 	$scope.encodeBody = code.encodeBody;
-
+	$scope.messages = messages.messages;
+	$scope.messageCount = messages.messageCount;
+	$scope.currentPage = 1;
+	$scope.$on('messages.update', function(event) {
+		$scope.messages = messages.messages;
+		$scope.messageCount = messages.messageCount;
+	});
+	$scope.deleteMail = function(index) {
+		request({action: 'deleteMail', id: $scope.messages[index].id, folder: '1', page: $scope.currentPage, unread: $scope.unreadCheckbox ? true : false}, callback);
+	} 
+	
 	$scope.unreadOnchange = function() {
-		request({action: 'getFolder', folder: 1, page: 1, unread: $scope.unreadCheckbox ? true : false}, function(data, header) {
-			$scope.messages = messages.messages = data.messages;
-			$scope.totalCount = messages.totalCount = data.count;
-		});
+		request({action: 'getFolder', folder: '1', page: 1, unread: $scope.unreadCheckbox ? true : false}, callback);
+		$scope.currentPage = 1;
 	}
 
 	$scope.prePage = function() {
-		if ($scope.page === 1) {
+		if ($scope.currentPage === 1) {
 			return;
 		} else {
-
+			$scope.currentPage --;
+			request({action: 'getFolder', folder: '1', page: $scope.currentPage, unread: $scope.unreadCheckbox ? true : false}, callback);
 		}
 
 	}
 
 	$scope.nextPage = function() {
-		if ($scope.page === Math.ceil($scope.messages.length / 10)) {
+		if ($scope.currentPage === Math.ceil($scope.messageCount / 2)) {
 			return;
 		} else {
-			request({action: 'getFolder', folder: 1, page: 1, fnCallback: callback});
-		}
-
-		function callback(content, data) {
-
+			$scope.currentPage ++;
+			request({action: 'getFolder', folder: '1', page: $scope.currentPage, unread: $scope.unreadCheckbox ? true : false}, callback);
 		}
 	}
 
-
+	function callback(data) {
+		$scope.messages = data.messages;
+		$scope.messageCount = messages.messageCount = data.messageCount;
+	}
 }]);
 
 mailView.controller('readMailCtrl', ['$scope', function($scope) {

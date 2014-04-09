@@ -2,13 +2,13 @@ var mailServices = angular.module('mailServices', []);
 
 mailServices.factory('messages', ['$http', '$rootScope', 'request', function($http, $rootScope, request) {
     var service = {
-        totalCount: 0,
+        messageCount: 0,
         messages: [],
         refresh: function(folder, page) {
             var url = '/getFolder?folder='+ folder + '&page=' + page;
             request({action: 'getFolder', folder: folder, page: page}, function(data, headers) {
                 service.messages = data.messages;
-                service.totalCount = data.count;
+                service.messageCount = data.messageCount;
                 $rootScope.$broadcast('messages.update');
             });
         }
@@ -19,18 +19,18 @@ mailServices.factory('messages', ['$http', '$rootScope', 'request', function($ht
 mailServices.factory('request', ['$http', function($http) {
     return function(filter, callback) {
         var sURL = filter.action + "?folder=" + filter.folder + "&page=" + filter.page;
-        if (filter.sId) {
-            sURL += "&id=" + filter.sId;
+        if (filter.id) {
+            sURL += "&id=" + filter.id;
         } 
         if (filter.unread) {
             sURL += '&unread=true'
         }
         $http({method: 'GET', url: sURL}).
             success(function(data, status, headers, config) {
-                console.log(headers);
                 if (typeof(callback) === 'function') {
                     callback(data, headers);
                 }
+                console.log(data)
                 /*if (jqXHR.statusText === "OK") {
                     fnCallback.call(filter.context, data);
                 } else if (jqXHR.statusText === "TIMEOUT") {
