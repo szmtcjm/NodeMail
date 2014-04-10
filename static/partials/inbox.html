@@ -1,6 +1,6 @@
 <div id="divFolder">
   <div id="divFolderHeader" class="header">
-    <h1 id="hFolderTitle">收件箱 </h1><span id="messageCount">(共{{messageCount}}封邮件)</span><label for="unread">(未读</label><input type="checkbox" id="unread" ng-model="unreadCheckbox"  ng-change="unreadOnchange();">)
+    <h1 id="hFolderTitle">{{folder}} </h1><span id="messageCount">(共{{messageCount}}封邮件)</span><label for="unread">(未读</label><input type="checkbox" id="unread" ng-model="unreadCheckbox"  ng-change="unreadOnchange();">)
     <div id="divItemCount"><input type="button" title="Previous Page" id="buttonPrev" value="上一页" ng-click="prePage()"/><span id="spnItems">当前页({{currentPage}})</span><input type="button" title="Next Page" id="buttonNext" value="下一页" ng-click="nextPage();"/></div>
   </div>
   <table border="0" cellpadding="0" cellspacing="0" id="tblMain">

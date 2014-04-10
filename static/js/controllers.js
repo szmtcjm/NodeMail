@@ -21,7 +21,6 @@ mailView.controller('filesCtrl', ['$scope', 'messages', '$http', function($scope
 		messages.refresh('1', '1');
 		console.log(1)
 	}
-
 	$scope.refreshInbox();
 }]);
 
@@ -37,7 +36,7 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 		$scope.messageCount = messages.messageCount;
 	});
 	$scope.deleteMail = function(index) {
-		request({action: 'deleteMail', id: $scope.messages[index].id, folder: '1', page: $scope.currentPage, unread: $scope.unreadCheckbox ? true : false}, callback);
+		request({action: 'deleteMail', id: $scope.messages[index]['message-id'], folder: '1', page: $scope.currentPage, unread: $scope.unreadCheckbox ? true : false}, callback);
 	} 
 	
 	$scope.unreadOnchange = function() {
@@ -68,6 +67,7 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 		$scope.messages = data.messages;
 		$scope.messageCount = messages.messageCount = data.messageCount;
 	}
+	$scope.folder = '收件箱';
 }]);
 
 mailView.controller('readMailCtrl', ['$scope', function($scope) {

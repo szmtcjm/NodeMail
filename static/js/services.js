@@ -4,6 +4,7 @@ mailServices.factory('messages', ['$http', '$rootScope', 'request', function($ht
     var service = {
         messageCount: 0,
         messages: [],
+        folder: '1',
         refresh: function(folder, page) {
             var url = '/getFolder?folder='+ folder + '&page=' + page;
             request({action: 'getFolder', folder: folder, page: page}, function(data, headers) {
@@ -20,7 +21,7 @@ mailServices.factory('request', ['$http', function($http) {
     return function(filter, callback) {
         var sURL = filter.action + "?folder=" + filter.folder + "&page=" + filter.page;
         if (filter.id) {
-            sURL += "&id=" + filter.id;
+            sURL += "&id=" + encodeURI(filter.id);
         } 
         if (filter.unread) {
             sURL += '&unread=true'

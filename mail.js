@@ -12,7 +12,7 @@ var messagesList = [];
 
 function connectToPopServer() {
     if (!pop3client) {
-        pop3client = new Poplib(995, "pop.163.com", {
+        pop3client = new Poplib(995, "pop.126.com", {
             tlserrs: false,
             enabletls: true,
             debug: false
@@ -31,7 +31,7 @@ pop3client.on("error", function(err) {
 
 pop3client.on("connect", function() {
     console.log("CONNECT success");
-    pop3client.login("szmt_cjm@163.com", "cjmcjm");
+    pop3client.login("szmtcjm@126.com", "60c78J91m");
 });
 
 pop3client.on("login", function(status, rawdata) {
@@ -60,7 +60,7 @@ pop3client.on("top", function(status, msgnumber, data, rawdata) {
     if (status === true) {
         console.log("TOP success for msgnumber " + msgnumber);
         parseHeader(data, msgnumber);
-        if (msgnumber === 1) {
+        if (msgnumber === 400) {
             insertDb(messagesList.splice(0));
             pop3client.quit();
             pop3client = undefined;
@@ -70,7 +70,7 @@ pop3client.on("top", function(status, msgnumber, data, rawdata) {
             insertDb(messagesList.splice(0));
         }
         pop3client.top(msgnumber - 1, 0);
-        pop3client.dele(msgnumber);
+        //pop3client.dele(msgnumber);
     } else {
         console.log("TOP failed for msgnumber " + msgnumber);
         pop3client.quit();
@@ -144,7 +144,7 @@ function parseHeader(rawHeaders, msgnumber) {
     var rawHeadersArray = rawHeaders.split("\r\n"),
         rawHeadersArraylen = rawHeadersArray.length,
         rawHeader,
-        headerPattern = /(.+):\s*(?:=\?(.+?)\?([B|Q])\?|)([^\?]*)(?:\?|)/,
+        headerPattern = /(.+?):\s*(?:=\?(.+?)\?([B|Q])\?|)([^\?]*)(?:\?|)/,
         i,
         returnHeaders = {};
     for (i = 0; i < rawHeadersArraylen; i++) {
@@ -203,8 +203,8 @@ exports.getMessages = function(folder, page, unread, callback) {
                 return;
             }
             collection.find(filter, {
-                "limit": 2,
-                "skip": (page - 1) * 2
+                "limit": 10,
+                "skip": (page - 1) * 10
             }).toArray(function(err, docs) {
                 globalDb.close();
                 if (err) {
@@ -224,13 +224,12 @@ exports.deleteMail = function(id, callback) {
             return;
         }
         var collection = db.collection("messages");
-        collection.remove({id: parseInt(id)}, {w: 1}, function(err, numberOfRemovedDocs){
+        collection.update({'message-id': decodeURI(id)}, {$set: {folder : '2'}}, function(err, result){
             globalDb.close();
             if (err) {
                 console.log("mongodb remove eror: " + err);
                 return;
             }
-            console.log(id)
             if (typeof(callback) === 'function') {
                 callback();
             };
