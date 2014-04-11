@@ -242,19 +242,27 @@ exports.operateMail = function(id, action, callback) {
     });
 }
 
-exports.emptyTrash = function() {
+exports.emptyTrash = function(callback) {
     globalDb.open(function(err, db) {
         if (err) {
             console.log("mongodb connect error: " + err);
+            callback(false)
             return;
         }
         var collection = db.collection("messages");
         collection.remove({'folder': '2'}, {w:1}, function(err, num) {
+            var returnVal;
             globalDb.close();
             if (err) {
                 console.log("mongodb remove eror: " + err);
-                return;
+                returnVal = false;
+            } else {
+                returnVal = true;
+                console.log(1)
             }
+            if (typeof(callback) === 'function') {
+                callback(num);
+            };
             console.log('remove: ' + num);
         });
     });

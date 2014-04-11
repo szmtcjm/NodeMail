@@ -18,7 +18,12 @@ var PORT = 8000,
 			getMessages(theQueryString);
 		} else if (route === config.action.emptyTrash) {
 			console.log(config.action.emptyTrash);
-			popemail.emptyTrash();
+			popemail.emptyTrash(function(num) {
+				var statusString = ((num || num === 0) ? 'OK' : 'FAIL');
+				response.setHeader("Content-Type", "application/json");
+				response.writeHead(200, statusString);
+				response.end(JSON.stringify({success: statusString, deleteNum: num}));
+			});
 		} else if (route === config.action.getMessageBody) {
 			if (theQueryString.msgNumber) {
 				getMessageBody(theQueryString.msgNumber);

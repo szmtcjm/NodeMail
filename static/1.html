@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+ <input type="button" onclick="xhrRequest();"/>
+</body>
+<script>
+function xhrRequest() {
+	var xhr = new XMLHttpRequest();
+	
+	xhr.open('GET', 'http://127.0.0.1:8000/emptyTrash');
+	xhr.setRequestHeader('Content-type', 'application/json');
+	xhr.onreadystatechange=function() {
+		if (xhr.readyState==4 && xhr.status==200) {
+			if (xhr.status==200) {
+				alert(xhr.responseText)
+				a = eval( '(' + xhr.responseText+ ')')
+				alert(a)
+			} else {
+				alert(xhr.status)
+				alert(xhr.responseText)
+			}
+			
+		} 
+	}
+	xhr.send();
+	
+	
+}
+</script>
+</html>

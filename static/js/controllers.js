@@ -99,7 +99,7 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 		}
 	});
 	function callback(data) {
-		$scope.messages = data.messages;
+		$scope.messages = messages.messages = data.messages;
 		$scope.messageCount = messages.messageCount = data.messageCount;
 	}
 	

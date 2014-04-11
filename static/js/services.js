@@ -15,12 +15,15 @@ mailServices.factory('messages', ['$http', '$rootScope', 'request', function($ht
             });
         },
         emptyTrash: function() {
-            request({action: 'emptyTrash'});
-            if (service.folder === '2') {
-                service.messages = [];
-                service.messageCount = 0;
-                $rootScope.$broadcast('messages.update');
-            } 
+            request({action: 'emptyTrash'}, function() {
+                $rootScope.$broadcast('aaa');
+                if (service.folder === '2') {
+                    service.messages = [];
+                    service.messageCount = 0;
+                    $rootScope.$broadcast('messages.update');
+                } 
+            });
+            
         }
     }
     return service;
@@ -39,14 +42,9 @@ mailServices.factory('request', ['$http', function($http) {
                 if (typeof(callback) === 'function') {
                     callback(data, headers);
                 }
-                console.log(data)
-                /*if (jqXHR.statusText === "OK") {
-                    fnCallback.call(filter.context, data);
-                } else if (jqXHR.statusText === "TIMEOUT") {
-                    that.showNotice("error", "请求超时");
-                }*/
             }).
             error(function(data, status, headers, config) {
+                console.log(data);
             });
     };
 }]);
