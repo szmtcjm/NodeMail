@@ -11,7 +11,7 @@
     </thead>
     <tbody>
       <tr ng-repeat="message in messages">
-        <td><img src="images/icon_delete.gif" ng-click="deleteMail($index)"/></td>
+        <td><img ng-src="images/{{imgSrc}}" ng-click="operateMail($index)"/></td>
         <td class="from">{{cleanupEmail(message.from)}}</td>
         <td class="attachment" ng-show="message.hasAttachments"><img src="images/icon_attachment.gif" title="Attachment" /></td>
         <td class="subject">{{htmlEncode(message.subject)}}</td>

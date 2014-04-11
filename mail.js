@@ -161,6 +161,9 @@ function parseHeader(rawHeaders, msgnumber) {
             } else {
                 returnHeaders[rawHeader[1]] = rawHeader[4]; //未编码
             }
+            if (rawHeader[1] === 'date') {
+                returnHeaders[rawHeader[1]] = new Date(returnHeaders[rawHeader[1]]);
+            }
         }
     }
     returnHeaders.unread = true;
@@ -204,7 +207,8 @@ exports.getMessages = function(folder, page, unread, callback) {
             }
             collection.find(filter, {
                 "limit": 10,
-                "skip": (page - 1) * 10
+                "skip": (page - 1) * 10,
+                'sort': [['date', -1]],
             }).toArray(function(err, docs) {
                 globalDb.close();
                 if (err) {
@@ -217,22 +221,41 @@ exports.getMessages = function(folder, page, unread, callback) {
     });
 }
 
-exports.deleteMail = function(id, callback) {
+exports.operateMail = function(id, action, callback) {
+    globalDb.open(function(err, db) {
+        if (err) {
+            console.log("mongodb connect error: " + err);
+            return;
+        }
+        var collection = db.collection("messages"),
+            folder = action === 'deleteMail' ? '2' : '1';
+        collection.update({'message-id': decodeURI(id)}, {$set: {folder : folder}}, function(err, result){
+            globalDb.close();
+            if (err) {
+                console.log("mongodb modify eror: " + err);
+                return;
+            }
+            if (typeof(callback) === 'function') {
+                callback();
+            };
+        });
+    });
+}
+
+exports.emptyTrash = function() {
     globalDb.open(function(err, db) {
         if (err) {
             console.log("mongodb connect error: " + err);
             return;
         }
         var collection = db.collection("messages");
-        collection.update({'message-id': decodeURI(id)}, {$set: {folder : '2'}}, function(err, result){
+        collection.remove({'folder': '2'}, {w:1}, function(err, num) {
             globalDb.close();
             if (err) {
                 console.log("mongodb remove eror: " + err);
                 return;
             }
-            if (typeof(callback) === 'function') {
-                callback();
-            };
+            console.log('remove: ' + num);
         });
     });
 }

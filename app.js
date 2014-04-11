@@ -11,17 +11,21 @@ var PORT = 8000,
 		var urlParsed = url.parse(request.url, true),
 			pathname = urlParsed.pathname,
 			theQueryString = urlParsed.query,
-			postData;
+			postData,
+			route = pathname.slice(1);
 
-		if (pathname.slice(1) === config.action.getFolder) {
+		if (route === config.action.getFolder) {
 			getMessages(theQueryString);
-		} else if (pathname.slice(1) === config.action.getMessageBody) {
+		} else if (route === config.action.emptyTrash) {
+			console.log(config.action.emptyTrash);
+			popemail.emptyTrash();
+		} else if (route === config.action.getMessageBody) {
 			if (theQueryString.msgNumber) {
 				getMessageBody(theQueryString.msgNumber);
 			}
-		} else if (pathname.slice(1) === config.action.deleteMail) {
-			deleteMail(theQueryString);
-		} else if (pathname.slice(1) === config.action.login) {
+		} else if (route === config.action.deleteMail || route === config.action.restoreMail) {
+			operateMail(theQueryString, route);
+		} else if (route === config.action.login) {
 			postData = "";
 			request.on("data", function(postDataChunk) {
 				postData += postDataChunk;
@@ -39,8 +43,8 @@ var PORT = 8000,
 			staticServer(request, response);
 		}
 
-		function deleteMail(theQueryString) {
-			popemail.deleteMail(theQueryString.id, function() {
+		function operateMail(theQueryString, action) {
+			popemail.operateMail(theQueryString.id, action, function() {
 				getMessages(theQueryString);
 			});
 		}

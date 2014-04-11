@@ -9,13 +9,15 @@ exports.Welcome = {
 	file: "index.html"
 };
 exports.action = {
-	getFolder: "getFolder",
-	getmessage: "getMessageBody",
-	deleteMail: "deleteMail",
-	login: "login"
+	getFolder: 'getFolder',
+	getmessage: 'getMessageBody',
+	deleteMail: 'deleteMail',
+	restoreMail: 'restoreMail',
+	emptyTrash: 'emptyTrash',
+	login: 'login'
 }
 
 exports.mailUserName = {
-	username: "szmtcjm",
+	username: 'szmtcjm',
 	password: ""
 }

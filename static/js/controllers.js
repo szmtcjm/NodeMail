@@ -16,12 +16,22 @@ mailView.config(['$routeProvider', function($routeProvider) {
 		otherwise({redirectTo: '/inbox'});
 }]);
 
-mailView.controller('filesCtrl', ['$scope', 'messages', '$http', function($scope, messages, $http) {
-	$scope.refreshInbox = function() {
+mailView.controller('filesCtrl', ['$scope', 'messages', '$http', 'request', '$window', function($scope, messages, $http, request, $window) {
+	$scope.clickInbox = function() {
+		messages.folder = '1';
 		messages.refresh('1', '1');
-		console.log(1)
+	};
+	$scope.clickTrash = function() {
+		messages.folder = '2';
+		messages.refresh('2', '1');
+	};
+
+	$scope.emptyTrash = function() {
+		if($window.confirm('是否清空？')) {
+			messages.emptyTrash();
+		}
 	}
-	$scope.refreshInbox();
+	messages.refresh('1', '1');
 }]);
 
 mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$filter', function($scope, code, request, messages, $filter) {
@@ -38,9 +48,13 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 	$scope.deleteMail = function(index) {
 		request({action: 'deleteMail', id: $scope.messages[index]['message-id'], folder: '1', page: $scope.currentPage, unread: $scope.unreadCheckbox ? true : false}, callback);
 	} 
+
+	$scope.restoreMail = function(index) {
+		request({action: 'restoreMail', id: $scope.messages[index]['message-id'], folder: '2', page: $scope.currentPage, unread: $scope.unreadCheckbox ? true : false}, callback);
+	}
 	
 	$scope.unreadOnchange = function() {
-		request({action: 'getFolder', folder: '1', page: 1, unread: $scope.unreadCheckbox ? true : false}, callback);
+		request({action: 'getFolder', folder: messages.folder, page: 1, unread: $scope.unreadCheckbox ? true : false}, callback);
 		$scope.currentPage = 1;
 	}
 
@@ -55,7 +69,7 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 	}
 
 	$scope.nextPage = function() {
-		if ($scope.currentPage === Math.ceil($scope.messageCount / 2)) {
+		if ($scope.currentPage === Math.ceil($scope.messageCount / 10)) {
 			return;
 		} else {
 			$scope.currentPage ++;
@@ -63,11 +77,32 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 		}
 	}
 
+	if (messages.folder === '1') {
+		$scope.folder = '收件箱';
+		$scope.operateMail = $scope.deleteMail;
+		$scope.imgSrc = 'icon_delete.gif';
+	} else {
+		$scope.folder = '垃圾箱';
+		$scope.operateMail = $scope.restoreMail;
+		$scope.imgSrc = 'icon_restore.gif';
+	}
+
+	$scope.$on('messages.changeFolder', function(event) {
+		if (messages.folder === '1') {
+			$scope.folder = '收件箱';
+			$scope.operateMail = $scope.deleteMail;
+			$scope.imgSrc = 'icon_delete.gif';
+		} else {
+			$scope.folder = '垃圾箱';
+			$scope.operateMail = $scope.restoreMail;
+			$scope.imgSrc = 'icon_restore.gif';
+		}
+	});
 	function callback(data) {
 		$scope.messages = data.messages;
 		$scope.messageCount = messages.messageCount = data.messageCount;
 	}
-	$scope.folder = '收件箱';
+	
 }]);
 
 mailView.controller('readMailCtrl', ['$scope', function($scope) {

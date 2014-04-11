@@ -10,8 +10,17 @@ mailServices.factory('messages', ['$http', '$rootScope', 'request', function($ht
             request({action: 'getFolder', folder: folder, page: page}, function(data, headers) {
                 service.messages = data.messages;
                 service.messageCount = data.messageCount;
+                $rootScope.$broadcast('messages.changeFolder');
                 $rootScope.$broadcast('messages.update');
             });
+        },
+        emptyTrash: function() {
+            request({action: 'emptyTrash'});
+            if (service.folder === '2') {
+                service.messages = [];
+                service.messageCount = 0;
+                $rootScope.$broadcast('messages.update');
+            } 
         }
     }
     return service;
@@ -19,13 +28,12 @@ mailServices.factory('messages', ['$http', '$rootScope', 'request', function($ht
 
 mailServices.factory('request', ['$http', function($http) {
     return function(filter, callback) {
-        var sURL = filter.action + "?folder=" + filter.folder + "&page=" + filter.page;
-        if (filter.id) {
-            sURL += "&id=" + encodeURI(filter.id);
-        } 
-        if (filter.unread) {
-            sURL += '&unread=true'
+        var sURL = filter.action,
+            queryString = '';
+        for (key in filter) {
+            queryString += (queryString ? '&' : '?') + key + '=' + filter[key];
         }
+        sURL += queryString;
         $http({method: 'GET', url: sURL}).
             success(function(data, status, headers, config) {
                 if (typeof(callback) === 'function') {
@@ -39,7 +47,6 @@ mailServices.factory('request', ['$http', function($http) {
                 }*/
             }).
             error(function(data, status, headers, config) {
-     
             });
     };
 }]);
