@@ -34,7 +34,7 @@ mailView.controller('filesCtrl', ['$scope', 'messages', '$http', 'request', '$wi
 	messages.refresh('1', '1');
 }]);
 
-mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$filter', function($scope, code, request, messages, $filter) {
+mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$filter', '$window', function($scope, code, request, messages, $filter, $window) {
 	$scope.cleanupEmail = code.cleanupEmail;
 	$scope.htmlEncode = code.htmlEncode;
 	$scope.encodeBody = code.encodeBody;
@@ -101,6 +101,10 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 	function callback(data) {
 		$scope.messages = messages.messages = data.messages;
 		$scope.messageCount = messages.messageCount = data.messageCount;
+	}
+
+	$scope.readMail = function() {
+		$window.location = '#/readMail';
 	}
 	
 }]);
