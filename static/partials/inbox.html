@@ -10,14 +10,14 @@
       <input type="button" title="Next Page" id="buttonNext" value="下一页" ng-click="nextPage();" class="btn btn-default btn-sm"/>
     </div>
   </div>
-  <table border="0" cellpadding="0" cellspacing="0" id="tblMain" class="table table-striped table-hover">
+  <table border="0" cellpadding="0" cellspacing="0" id="tblMain" class="table table-hover">
     <thead>    
         <tr id="trNoMessages">
           <td colspan="5">There are no messages in this folder.</td>
         </tr>         
     </thead>
     <tbody>
-      <tr ng-repeat="message in messages" ng-click="readMail($index)">
+      <tr ng-repeat="message in messages" ng-click="readMail($index)" ng-class="{unreadrow: message.unread, readrow: !message.unread}">
         <td><img class="inboximg" ng-src="images/{{imgSrc}}" ng-click="operateMail($index)"/></td>
         <td class="from">{{cleanupEmail(message.from)}}</td>
         <td class="attachment" ng-show="message.hasAttachments"><img src="images/icon_attachment.gif" title="Attachment" /></td>

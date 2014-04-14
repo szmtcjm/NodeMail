@@ -122,6 +122,14 @@ ul.message-actions li {
     padding: 0px 5px 0px 0px;
 }
 
+.unreadrow{
+    font-weight:900;
+    background-color: #E3E2E2;
+}
+.readrow {
+    font-weight: 100;
+    background-color: white;
+}
 /****************************************************
  * Styles for Reading Mail
  ****************************************************/

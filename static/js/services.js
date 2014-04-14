@@ -5,6 +5,7 @@ mailServices.factory('messages', ['$http', '$rootScope', 'request', function($ht
         messageCount: 0,
         messages: [],
         folder: '1',
+        readMail: {},
         refresh: function(folder, page) {
             var url = '/getFolder?folder='+ folder + '&page=' + page;
             request({action: 'getFolder', folder: folder, page: page}, function(data, headers) {
@@ -27,6 +28,7 @@ mailServices.factory('messages', ['$http', '$rootScope', 'request', function($ht
     }
     return service;
 }]);
+
 
 mailServices.factory('request', ['$http', function($http) {
     return function(filter, callback) {

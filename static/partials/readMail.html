@@ -1,14 +1,14 @@
 <div id="divReadMail">
   <div class="header">
-      <h1 id="hSubject"></h1>
+      <h1 id="hSubject">{{readMail.subject}}</h1>
   </div>
   <div class="message-headers">
-    <div id="divMessageFrom"></div>
-    <div id="divMessageDate"></div>
+    <div id="divMessageFrom">{{readMail.from}}</div>
+    <div id="divMessageDate">{{readMail.date}}</div>
   </div>    
-  <div id="divMessageTo"></div>
-  <div id="divMessageCC"></div>    
-  <div id="divMessageBCC"></div>
+  <div id="divMessageTo">{{readMail.to}}</div>
+  <div id="divMessageCC">{{readMail.cc}}</div>    
+  <div id="divMessageBCC">{{readMail.bcc}}</div>
   <ul class="message-actions">
     <li><span class="link" id="spnReply">Reply</span></li>
     <li><span class="link" id="spnReplyAll">Reply All</span></li>

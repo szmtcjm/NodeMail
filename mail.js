@@ -60,7 +60,7 @@ pop3client.on("top", function(status, msgnumber, data, rawdata) {
     if (status === true) {
         console.log("TOP success for msgnumber " + msgnumber);
         parseHeader(data, msgnumber);
-        if (msgnumber === 400) {
+        if (msgnumber === 500) {
             insertDb(messagesList.splice(0));
             pop3client.quit();
             pop3client = undefined;
@@ -196,13 +196,13 @@ exports.getMessages = function(folder, page, unread, callback) {
             console.log("mongodb connect error: " + err);
             return;
         }
-        var collection = db.collection("messages"),
-            filter = unread ? {folder: folder, unread: true} : {folder: folder};
+        var unreadBoolean = unread === 'true',
+            collection = db.collection("messages"),
+            filter = unreadBoolean ? {folder: folder, unread: true} : {folder: folder};
         
         collection.count(filter, function(err, count) {
             if (err) {
                 console.log("mongodb count error: " + err);
-                globalDb.close();
                 return;
             }
             collection.find(filter, {
@@ -265,5 +265,30 @@ exports.emptyTrash = function(callback) {
             };
             console.log('remove: ' + num);
         });
+    });
+}
+
+exports.readMail = function(theQueryString, callback) {
+    globalDb.open(function(err, db) {
+        if (err) {
+            console.log("mongodb connect error: " + err);
+            callback(false)
+            return;
+        }
+        var collection = db.collection("messages");
+        if (theQueryString.unread === 'true') {
+            collection.update({'message-id': decodeURI(theQueryString.id)}, {$set: {unread : false}}, function(err, result){
+                globalDb.close();
+                if (err) {
+                    console.log("mongodb update eror: " + err);
+                    return;
+                }
+                if (typeof(callback) === 'function') {
+                    callback(true);
+                }
+            });
+        } else {
+            globalDb.close();
+        }
     });
 }

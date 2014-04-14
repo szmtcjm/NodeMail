@@ -10,7 +10,7 @@ exports.Welcome = {
 };
 exports.action = {
 	getFolder: 'getFolder',
-	getmessage: 'getMessageBody',
+	readMail: 'readMail',
 	deleteMail: 'deleteMail',
 	restoreMail: 'restoreMail',
 	emptyTrash: 'emptyTrash',

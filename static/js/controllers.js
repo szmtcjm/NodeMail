@@ -106,14 +106,20 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 		$scope.totalPage = Math.ceil($scope.messageCount / 15);
 	}
 
-	$scope.readMail = function() {
+	$scope.readMail = function(index) {
+		messages.readMail = messages.messages[index];
+		request({action: 'readMail', id: messages.readMail['message-id'], unread: messages.readMail.unread}, function(data) {
+			
+		});
 		$window.location = '#/readMail';
 	}
 
 }]);
 
-mailView.controller('readMailCtrl', ['$scope', function($scope) {
-	
+mailView.controller('readMailCtrl', ['$scope', 'messages', function($scope, messages) {
+	$scope.readMail = messages.readMail;
+	console.log($scope.readMail.to)
+
 }]);
 
 mailView.controller('composeMailCtrl', ['$scope', function($scope) {

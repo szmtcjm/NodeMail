@@ -24,9 +24,13 @@ var PORT = 8000,
 				response.writeHead(200, statusString);
 				response.end(JSON.stringify({success: statusString, deleteNum: num}));
 			});
-		} else if (route === config.action.getMessageBody) {
-			if (theQueryString.msgNumber) {
-				getMessageBody(theQueryString.msgNumber);
+		} else if (route === config.action.readMail) {
+			if (theQueryString.id) {
+				popemail.readMail(theQueryString, function() {
+					response.setHeader("Content-Type", "application/json");
+					response.writeHead(200, 'OK');
+					response.end(JSON.stringify({success: true, body: '1'}));
+				});
 			}
 		} else if (route === config.action.deleteMail || route === config.action.restoreMail) {
 			operateMail(theQueryString, route);
