@@ -40,10 +40,12 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 	$scope.encodeBody = code.encodeBody;
 	$scope.messages = messages.messages;
 	$scope.messageCount = messages.messageCount;
+	$scope.totalPage = Math.ceil($scope.messageCount / 15);
 	$scope.currentPage = 1;
 	$scope.$on('messages.update', function(event) {
 		$scope.messages = messages.messages;
 		$scope.messageCount = messages.messageCount;
+		$scope.totalPage = Math.ceil($scope.messageCount / 15);
 	});
 	$scope.deleteMail = function(index) {
 		request({action: 'deleteMail', id: $scope.messages[index]['message-id'], folder: '1', page: $scope.currentPage, unread: $scope.unreadCheckbox ? true : false}, callback);
@@ -101,12 +103,13 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 	function callback(data) {
 		$scope.messages = messages.messages = data.messages;
 		$scope.messageCount = messages.messageCount = data.messageCount;
+		$scope.totalPage = Math.ceil($scope.messageCount / 15);
 	}
 
 	$scope.readMail = function() {
 		$window.location = '#/readMail';
 	}
-	
+
 }]);
 
 mailView.controller('readMailCtrl', ['$scope', function($scope) {

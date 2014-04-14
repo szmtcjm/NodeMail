@@ -2,9 +2,13 @@
   <div id="divFolderHeader" class="row">
     <div class="col-md-4">
       <span id="hFolderTitle">{{folder}} </span>
-      <span id="messageCount">(共{{messageCount}}封邮件)</span><label for="unread">(未读</label><input type="checkbox" id="unread" ng-model="unreadCheckbox"  ng-change="unreadOnchange();">)
+      <label for="unread">(未读</label><input type="checkbox" id="unread" ng-model="unreadCheckbox"  ng-change="unreadOnchange();">)
     </div>
-    <div id="divItemCount" class="col-md-4 col-md-offset-4"><input type="button" title="Previous Page" id="buttonPrev" value="上一页" ng-click="prePage()" class="btn btn-default btn-sm" /><span id="spnItems">当前页({{currentPage}})</span><input type="button" title="Next Page" id="buttonNext" value="下一页" ng-click="nextPage();" class="btn btn-default btn-sm"/></div>
+    <div id="divItemCount" class="col-md-4 col-md-offset-4">
+      <input type="button" title="Previous Page" id="buttonPrev" value="上一页" ng-click="prePage()" class="btn btn-default btn-sm" />
+      <span id="spnItems">{{currentPage}}/{{totalPage}}&nbsp;[{{messageCount}}]</span>
+      <input type="button" title="Next Page" id="buttonNext" value="下一页" ng-click="nextPage();" class="btn btn-default btn-sm"/>
+    </div>
   </div>
   <table border="0" cellpadding="0" cellspacing="0" id="tblMain" class="table table-striped table-hover">
     <thead>    
@@ -13,12 +17,12 @@
         </tr>         
     </thead>
     <tbody>
-      <tr ng-repeat="message in messages" ng-click="readMail($index)" class="active">
+      <tr ng-repeat="message in messages" ng-click="readMail($index)">
         <td><img class="inboximg" ng-src="images/{{imgSrc}}" ng-click="operateMail($index)"/></td>
         <td class="from">{{cleanupEmail(message.from)}}</td>
         <td class="attachment" ng-show="message.hasAttachments"><img src="images/icon_attachment.gif" title="Attachment" /></td>
         <td class="subject">{{htmlEncode(message.subject)}}</td>
-        <td class="date" nowrap="nowrap">{{message.date}}</td>
+        <td class="date" nowrap="nowrap">{{message.date | date:'medium'}}</td>
       </tr>
       <tr style="visibility: hidden">
         <td colspan="5"></td>
