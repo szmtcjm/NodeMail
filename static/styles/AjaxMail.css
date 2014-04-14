@@ -27,8 +27,8 @@ span.link {
 #divComposeMail {
     position: absolute;
     top: 35px;
-    left: 150px;
-    width: 600px;
+    left: 12%;
+    width: 85%;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
@@ -39,10 +39,12 @@ span.link {
 
 #ulMainMenu {
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 5px;
+    top: 50px;
     margin: 0px;
     padding: 10px;
+    width: 10%;
+    font-size: 150%
 }
 
 #ulMainMenu li {
@@ -60,78 +62,31 @@ span.link {
 /****************************************************
  * Folder Display Styles
  ****************************************************/
+div.header {
+    border-bottom: 1px solid #999999;
+    height: 40px;
+    padding-bottom: 2px;
+}
 
 h1 {
-    font-size: 120%;
     margin-bottom: 0px;
     margin-top: 0px;
 }
 
 #hFolderTitle {
-    float: left;
+    font-size: 200%;
 }
 
 #messageCount {
     font-size: 70%;
 }
-
-div.status {
+/*.inboxtitleinfo {
     float: left;
-    font-size: 60%;
-    margin-left: 3px;
-    margin-top: 8px;
-}
-
-div.header {
-    border-bottom: 1px solid #999999;
-    height: 24px;
-}
+}*/
 
 /****************************************************
  * Mail Folder Styles
  ****************************************************/
-
-#tblMain { 
-    clear:all; 
-}
-
-td.from {
-    width: 160px;
-}
-
-td.subject {
-    width: 300px;
-}
-
-td.date {
-    width: 100px;
-    text-align: right;
-}
-
-#tblMain tbody tr td {
-    border-bottom: 1px solid #999999;
-    padding: 2px 4px;
-    background-color: #efefef;
-    cursor: pointer;
-    cursor: hand;
-    font-size: 80%;
-}
-
-#tblMain tbody tr td.attachment {
-    padding: 0px;
-    width: 16px;
-}
-
-#tblMain tbody tr.new td {
-    background-color: #F7FFCD;
-}
-
-#divItemCount {
-    float:right;
-    font-size: 60%;
-    margin-top: 8px;  
-    margin-left: 5px;     
-}
 
 thead {
     display: none;
@@ -139,6 +94,10 @@ thead {
 
 #spnItems {
     padding: 0px 4px 0px 4px;
+}
+
+.inboximg {
+    cursor: pointer;
 }
 
 /****************************************************

@@ -16,7 +16,6 @@ mailServices.factory('messages', ['$http', '$rootScope', 'request', function($ht
         },
         emptyTrash: function() {
             request({action: 'emptyTrash'}, function() {
-                $rootScope.$broadcast('aaa');
                 if (service.folder === '2') {
                     service.messages = [];
                     service.messageCount = 0;

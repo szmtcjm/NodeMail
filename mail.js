@@ -206,8 +206,8 @@ exports.getMessages = function(folder, page, unread, callback) {
                 return;
             }
             collection.find(filter, {
-                "limit": 10,
-                "skip": (page - 1) * 10,
+                "limit": 15,
+                "skip": (page - 1) * 15,
                 'sort': [['date', -1]],
             }).toArray(function(err, docs) {
                 globalDb.close();

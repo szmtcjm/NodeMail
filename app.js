@@ -59,9 +59,9 @@ var PORT = 8000,
 				var responseInfo = {};
 				responseInfo.messageCount = count;
 				responseInfo.page = theQueryString.page;
-				responseInfo.pageCount = 10;
+				responseInfo.pageCount = 15;
 				responseInfo.folder = theQueryString.folder;
-				responseInfo.firstMessage = (theQueryString.page - 1) * 10 + 1;
+				responseInfo.firstMessage = (theQueryString.page - 1) * 15 + 1;
 				responseInfo.unreadCount = responseInfo.pageCount;
 				responseInfo.messages = docs;
 				response.setHeader("Content-Type", "application/json");

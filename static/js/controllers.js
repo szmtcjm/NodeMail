@@ -69,7 +69,7 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 	}
 
 	$scope.nextPage = function() {
-		if ($scope.currentPage === Math.ceil($scope.messageCount / 10)) {
+		if ($scope.currentPage === Math.ceil($scope.messageCount / 15)) {
 			return;
 		} else {
 			$scope.currentPage ++;
