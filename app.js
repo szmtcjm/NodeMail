@@ -17,7 +17,6 @@ var PORT = 8000,
 		if (route === config.action.getFolder) {
 			getMessages(theQueryString);
 		} else if (route === config.action.emptyTrash) {
-			console.log(config.action.emptyTrash);
 			popemail.emptyTrash(function(num) {
 				var statusString = ((num || num === 0) ? 'OK' : 'FAIL');
 				response.setHeader("Content-Type", "application/json");

@@ -13,7 +13,7 @@
     <li><a class="link" id="spnTrash" href="#/inbox" ng-click="clickTrash()">垃圾箱</a> (<a class="link" id="spnEmpty" href="#" ng-click="emptyTrash()">清空</a>)</li>
   </ul>
   <div id="divUser"></div>
-  <div id="divNotice"></div>
+  <div id="divNotice" ng-controller="noticeCtrl" ng-class="noticeClass">{{notice}}</div>
       
   <div ng-view></div>
 </body>
@@ -21,6 +21,7 @@
 <script src="frontlib/bootstrap/js/bootstrap.min.js"></script>
 <script src="frontlib/angular/angular.min.js"></script>
 <script src="frontlib/angular/angular-route.min.js"></script>
+<script src="frontlib/angular/angular-cookies.min.js"></script>
 <script src="js/controllers.js"></script>
 <script src="js/services.js"></script>
 </html>

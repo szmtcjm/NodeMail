@@ -3,35 +3,23 @@ var mailServices = angular.module('mailServices', []);
 mailServices.factory('messages', ['$http', '$rootScope', 'request', function($http, $rootScope, request) {
     var service = {
         messageCount: 0,
-        messages: [],
         folder: '1',
-        readMail: {},
-        refresh: function(folder, page) {
-            var url = '/getFolder?folder='+ folder + '&page=' + page;
-            request({action: 'getFolder', folder: folder, page: page}, function(data, headers) {
-                service.messages = data.messages;
-                service.messageCount = data.messageCount;
-                $rootScope.$broadcast('messages.changeFolder');
-                $rootScope.$broadcast('messages.update');
-            });
-        },
-        emptyTrash: function() {
-            request({action: 'emptyTrash'}, function() {
-                if (service.folder === '2') {
-                    service.messages = [];
-                    service.messageCount = 0;
-                    $rootScope.$broadcast('messages.update');
-                } 
-            });
-            
-        }
+        messages: [],
+        readMail: {}
     }
     return service;
 }]);
 
 
-mailServices.factory('request', ['$http', function($http) {
+mailServices.factory('request', ['$http', 'notice', function($http, notice) {
+    var onRequest = false;
     return function(filter, callback) {
+        if (onRequest) {
+            notice.setNotice('正在加载，请稍后再试...');
+            return;
+        }
+        onRequest = true;
+        notice.setNotice('正在加载...');
         var sURL = filter.action,
             queryString = '';
         for (key in filter) {
@@ -43,11 +31,26 @@ mailServices.factory('request', ['$http', function($http) {
                 if (typeof(callback) === 'function') {
                     callback(data, headers);
                 }
+                onRequest = false;
+                notice.setNotice('');
             }).
             error(function(data, status, headers, config) {
                 console.log(data);
+                onRequest = false;
+                notice.setNotice('');
             });
     };
+}]);
+
+mailServices.factory('notice', ['$rootScope', function($rootScope) {
+    var notice = {
+        noticeString: '',
+        setNotice: function(theNotice) {
+            notice.noticeString = theNotice;
+            $rootScope.$broadcast('notice');
+        }
+    };
+    return notice;
 }]);
 
 mailServices.factory('code', [function() {

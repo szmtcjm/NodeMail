@@ -241,13 +241,13 @@ td.message-container textarea {
     font-family: Arial,Helvetica,Sans-Serif;
 }
 
-div.info {
+.info {
     background-color: #F7FFCD;
     background-image: url(../images/icon_info.gif);
     border: 1px solid #A5A54A;
 }
 
-div.error {
+.error {
     background-color: #FFE6E6;
     background-image: url(../images/icon_alert.gif);   
     border: 1px solid red;

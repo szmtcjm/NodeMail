@@ -171,9 +171,6 @@ function parseHeader(rawHeaders, msgnumber) {
     messagesList.push(returnHeaders);
 }
 
-function parseMessageBody(rawBody) {}
-
-
 function insertDb(msg) {
     globalDb.open(function(err, db) {
         if (err) {
@@ -288,6 +285,9 @@ exports.readMail = function(theQueryString, callback) {
                 }
             });
         } else {
+            if (typeof(callback) === 'function') {
+                    callback(true);
+            }
             globalDb.close();
         }
     });
