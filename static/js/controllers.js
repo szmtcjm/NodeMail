@@ -168,7 +168,7 @@ mailView.controller('noticeCtrl', ['$scope', 'notice', function($scope, notice) 
 	$scope.$on('notice', function(event) {
 		$scope.notice = notice.noticeString;
 		if (notice.noticeString) {
-			$scope.noticeClass = 'info';
+			$scope.noticeClass = 'alert alert-warning';
 		} else {
 			$scope.noticeClass = '';
 		}
