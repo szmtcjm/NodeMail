@@ -44,42 +44,6 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 	$scope.htmlEncode = code.htmlEncode;
 	$scope.encodeBody = code.encodeBody;
 
-	var setFolder = function() {
-		if (messages.folder === '1') {
-			$scope.folder = '1';
-			$scope.folderName = '收件箱';
-			$scope.operateMail = $scope.deleteMail;
-			$scope.imgSrc = 'icon_delete.gif';
-			$cookieStore.put('folder', '1');
-		} else {
-			$scope.folder = '2';
-			$scope.folderName = '垃圾箱';
-			$scope.operateMail = $scope.restoreMail;
-			$scope.imgSrc = 'icon_restore.gif';
-			$cookieStore.put('folder', '2');
-		}
-	};
-
-	var setMessages = function(data) {
-		if (data) {
-			messages.messages = data.messages;
-			messages.messageCount = data.messageCount;
-		}
-		$scope.messages = messages.messages;
-		$scope.messageCount = messages.messageCount;
-		$scope.totalPage = Math.ceil($scope.messageCount / 15);
-		$cookieStore.put('currentPage', $scope.currentPage);
-	}
-
-	$scope.folder = messages.folder = $cookieStore.get('folder') || '1';
-	$scope.currentPage = messages.currentPage = parseInt($cookieStore.get('currentPage')) || 1;
-	setFolder();
-	request({action: 'getFolder', 
-		folder: $scope.folder, 
-		page: $scope.currentPage, 
-		unread: $scope.unreadCheckbox ? true : false}, 
-		setMessages);
-
 	$scope.$on('messages.changeFolder', function(event) {
 		$scope.currentPage = 1;
 		setFolder();
@@ -149,8 +113,43 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 		request({action: 'readMail', 
 				id: messages.readMail['message-id'], 
 				unread: messages.readMail.unread});
-		$window.location = '#/readMail';
 	}
+
+	var setFolder = function() {
+		if (messages.folder === '1') {
+			$scope.folder = '1';
+			$scope.folderName = '收件箱';
+			$scope.operateMail = $scope.deleteMail;
+			$scope.imgSrc = 'icon_delete.gif';
+			$cookieStore.put('folder', '1');
+		} else {
+			$scope.folder = '2';
+			$scope.folderName = '垃圾箱';
+			$scope.operateMail = $scope.restoreMail;
+			$scope.imgSrc = 'icon_restore.gif';
+			$cookieStore.put('folder', '2');
+		}
+	};
+
+	var setMessages = function(data) {
+		if (data) {
+			messages.messages = data.messages;
+			messages.messageCount = data.messageCount;
+		}
+		$scope.messages = messages.messages;
+		$scope.messageCount = messages.messageCount;
+		$scope.totalPage = Math.ceil($scope.messageCount / 15);
+		$cookieStore.put('currentPage', $scope.currentPage);
+	}
+
+	$scope.folder = messages.folder = $cookieStore.get('folder') || '1';
+	$scope.currentPage = messages.currentPage = parseInt($cookieStore.get('currentPage')) || 1;
+	setFolder();
+	request({action: 'getFolder', 
+		folder: $scope.folder, 
+		page: $scope.currentPage, 
+		unread: $scope.unreadCheckbox ? true : false}, 
+		setMessages);
 
 }]);
 

@@ -17,12 +17,12 @@
         </tr>         
     </thead>
     <tbody>
-      <tr ng-repeat="message in messages" ng-click="readMail($index)" ng-class="{unreadrow: message.unread, readrow: !message.unread}">
+      <tr ng-repeat="message in messages" ng-class="{unreadrow: message.unread, readrow: !message.unread}">
         <td><img class="inboximg" ng-src="images/{{imgSrc}}" ng-click="operateMail($index)"/></td>
         <td class="from">{{cleanupEmail(message.from)}}</td>
         <td class="attachment" ng-show="message.hasAttachments"><img src="images/icon_attachment.gif" title="Attachment" /></td>
-        <td class="subject">{{htmlEncode(message.subject)}}</td>
-        <td class="date" nowrap="nowrap">{{message.date | date:'medium'}}</td>
+        <td class="subject"><a href="#/readMail" ng-click="readMail($index)">{{htmlEncode(message.subject)}}</a></td>
+        <td class="date" nowrap="nowrap">{{message.date | date:'yyyy-MM-dd'}}</td>
       </tr>
       <tr style="visibility: hidden">
         <td colspan="5"></td>
