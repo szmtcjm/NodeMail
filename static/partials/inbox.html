@@ -19,7 +19,9 @@
     <tbody>
       <tr ng-repeat="message in messages" ng-class="{unreadrow: message.unread, readrow: !message.unread}">
         <td><img class="inboximg" ng-src="images/{{imgSrc}}" ng-click="operateMail($index)"/></td>
-        <td class="from">{{cleanupEmail(message.from)}}</td>
+        <td class="from" ng-mousemove="mouseOverFrom($index)" ng-mouseleave="mouseLeaveFrom($index)">{{cleanupEmail(message.from)}}
+        <c-tipbox ng-show="showTipbox[$index]"></c-tipbox>
+        </td>
         <td class="attachment" ng-show="message.hasAttachments"><img src="images/icon_attachment.gif" title="Attachment" /></td>
         <td class="subject"><a href="#/readMail" ng-click="readMail($index)">{{htmlEncode(message.subject)}}</a></td>
         <td class="date" nowrap="nowrap">{{message.date | date:'yyyy-MM-dd'}}</td>

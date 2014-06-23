@@ -1,4 +1,4 @@
-var mailView = angular.module('mailView', ['ngRoute', 'mailServices', 'ngCookies']);
+var mailView = angular.module('mailView', ['ngRoute', 'mailServices', 'ngCookies', 'tipbox']);
 mailView.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.
 		when('/inbox', {
@@ -149,7 +149,15 @@ mailView.controller('inboxCtrl', ['$scope', 'code', 'request', 'messages', '$fil
 		folder: $scope.folder, 
 		page: $scope.currentPage, 
 		unread: $scope.unreadCheckbox ? true : false}, 
-		setMessages);
+		setMessages
+		);
+	$scope.showTipbox = [];
+	$scope.mouseOverFrom = function(index) {
+		$scope.showTipbox[index] = true;
+	}
+	$scope.mouseLeaveFrom = function(index) {
+		$scope.showTipbox[index] = false;
+	}
 
 }]);
 

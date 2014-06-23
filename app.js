@@ -7,6 +7,55 @@ var PORT = 8001,
 	popemail = require("./mail"),
 	login = require("./login"),
 	querystring = require("querystring"),
+	express = require("express"),
+	app = express(),
+	server;
+
+	app.use(express.logger('dev'));
+	app.use(express.cookieParser());
+	app.use(express.bodyParser());
+
+	app.get(config.action.getFolder, function(req, res) {
+		getMessages(theQueryString, req, res);
+	});
+
+	app.get(config.action.emptyTrash, function(req, res) {
+		popemail.emptyTrash(function(num) {
+			var statusString = ((num || num === 0) ? 'OK' : 'FAIL');
+			res.setHeader("Content-Type", "application/json");
+			res.writeHead(200, statusString);
+			res.send(JSON.stringify({success: statusString, deleteNum: num}));
+		});
+	});
+
+	app.get(route === config.action.readMail, function(req, res) {
+		popemail.readMail(theQueryString, function() {
+			res.setHeader("Content-Type", "application/json");
+			res.writeHead(200, 'OK');
+			res.send(JSON.stringify({success: true, body: '1'}));
+		});
+	});
+
+	app.get(config.action.deleteMail, function(req, res) {
+		popemail.operateMail(theQueryString.id, action, function() {
+			getMessages(theQueryString);
+		});
+	});
+
+	app.get(route === config.action.restoreMail, function(req, res) {
+		popemail.operateMail(theQueryString.id, action, function() {
+			getMessages(theQueryString);
+		});
+	});
+
+	app.use(function(err, req, res, next){
+  	// logic
+	});
+
+	server = app.listen(PORT, function() {
+ 		console.log('Listening on port %d', server.address().port);
+	});
+
 	server = http.createServer(function(request, response) {
 		var urlParsed = url.parse(request.url, true),
 			pathname = urlParsed.pathname,
@@ -57,7 +106,7 @@ var PORT = 8001,
 			});
 		}
 
-		function getMessages(theQueryString) {
+		function getMessages(theQueryString, req, res) {
 			popemail.getMessages(theQueryString.folder, theQueryString.page, theQueryString.unread, function(docs, count) {
 				var responseInfo = {};
 				responseInfo.messageCount = count;
@@ -67,9 +116,9 @@ var PORT = 8001,
 				responseInfo.firstMessage = (theQueryString.page - 1) * 15 + 1;
 				responseInfo.unreadCount = responseInfo.pageCount;
 				responseInfo.messages = docs;
-				response.setHeader("Content-Type", "application/json");
-				response.writeHead(200, "OK");
-				response.end(JSON.stringify(responseInfo));
+				res.setHeader("Content-Type", "application/json");
+				res.writeHead(200, "OK");
+				res.send(JSON.stringify(responseInfo));
 			});
 		}
 
