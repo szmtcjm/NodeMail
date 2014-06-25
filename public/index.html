@@ -1,0 +1,28 @@
+<!doctype html>
+<html ng-app="mailViewModule">
+<head>
+  <title>Ajax Mail</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" type="text/css" href="styles/AjaxMail.css" />
+  <link rel="stylesheet" type="text/css" href="frontlib/bootstrap/css/bootstrap.min.css">
+</head>
+<body>       
+  <ul id="ulMainMenu" ng-controller="filesCtrl">
+    <li id="liCompose"><a class="link" id="spnCompose" href="#/compose">写邮件</a></li>
+    <li><a class="link" id="spnInbox" href="#/inbox" ng-click="clickInbox()">收件箱</a></li>
+    <li><a class="link" id="spnTrash" href="#/inbox" ng-click="clickTrash()">垃圾箱</a> (<a class="link" id="spnEmpty" href="#" ng-click="emptyTrash()">清空</a>)</li>
+  </ul>
+  <div id="divUser"></div>
+  <div id="divNotice" ng-controller="noticeCtrl" ng-class="noticeClass">{{notice}}</div>
+      
+  <div ng-view></div>
+</body>
+<script src="frontlib/jquery/jquery-2.0.3.min.js"></script>
+<script src="frontlib/bootstrap/js/bootstrap.min.js"></script>
+<script src="frontlib/angular/angular.min.js"></script>
+<script src="frontlib/angular/angular-route.min.js"></script>
+<script src="frontlib/angular/angular-cookies.min.js"></script>
+<script src="frontlib/angular/angular-tipbox.js"></script>
+<script src="js/controllers.js"></script>
+<script src="js/services.js"></script>
+</html>
