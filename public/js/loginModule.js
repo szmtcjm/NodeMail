@@ -1,4 +1,4 @@
-var loginModule = angular.module('loginModule', ['ngRoute']);
+var loginModule = angular.module('loginModule', ['ngRoute', 'ngAnimate']);
 
 loginModule.config(['$routeProvider',
 	function($routeProvider) {
@@ -14,6 +14,9 @@ loginModule.config(['$routeProvider',
 		when('/register', {
 			templateUrl: 'partials/register.html',
 			controller: 'registerController'
-		})
+		}).
+		otherwise({
+			redirectTo: '/'
+		});
 	}
 ]);
