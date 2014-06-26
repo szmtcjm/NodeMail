@@ -2,7 +2,6 @@ var PORT = 8001,
 	http = require("http"),
 	url = require("url"),
 	config = require("./config"),
-	staticServer = require("./staticServer"),
 	action = require("./action"),
 	//popemail = require("./mail"),
 	login = require("./login"),
@@ -11,10 +10,23 @@ var PORT = 8001,
 	morgan = require('morgan'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
+	cookieSession = require('cookie-session'),
+	MongoStore = require('connect-mongo')(session),
 	server;
 
 app.use(morgan());
 app.use(cookieParser());
+app.use(cookieSession({
+	name: 'sess_id',
+	keys: 'mail',
+	secret: 'mail.session'
+	cookie: {
+		maxAge: 1000 * 60 * 5
+	},
+	store: new MongoStore({
+		db: 'mail'
+	})
+}));
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'))

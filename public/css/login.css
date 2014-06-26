@@ -12,6 +12,12 @@ body {
 	color: white;
 	background: #ff6e00;
 	border-radius: 5px;
+	text-align: center;
+}
+
+a.button  {
+	text-decoration: none;
+	display: inline-block;
 }
 
 .login {
@@ -23,14 +29,13 @@ body {
 	width: 150px;
 	height: 60px;
 	line-height: 60px;
-	text-align: center;
 	font-weight: bold;
 	font-size: 22px;
 }
 
 .login-form {
 	width: 270px;
-	margin: 200px auto;
+	margin: 200px auto auto;
 	color: white;
 	padding: 30px 50px;
 	box-shadow: 0 0 7px #ccc
@@ -55,6 +60,7 @@ body {
 .divformargin {
 	margin-top: 15px;
 }
+
 .submit {
 	border: none;
 	height: 35px;
@@ -66,15 +72,14 @@ body {
 	margin: 20px auto 0;
 }
 
-.ng-enter {
-    -webkit-animation: fadeIn 0.5s;
-    -moz-animation: fadeIn 0.5s;
-    -ms-animation: fadeIn 0.5s;
-    animation: fadeIn 0.5s;
+.jump {
+	width: 300px;
+	margin: 15px auto;
+	color: white;
 }
-.ng-leave {
-    -webkit-animation: fadeOut 0.5s;
-    -moz-animation: fadeOut 0.5s;
-    -ms-animation: fadeOut 0.5s;
-    animation: fadeOut 0.5s;
+.ng-enter {
+    -webkit-animation: fadeInLeft 0.5s;
+    -moz-animation: fadeInLeft 0.5s;
+    -ms-animation: fadeInLeft 0.5s;
+    animation: fadeInLeft 0.5s;
 }
