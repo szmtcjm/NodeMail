@@ -10,30 +10,32 @@ var PORT = 8001,
 	morgan = require('morgan'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
-	cookieSession = require('cookie-session'),
+	session = require('express-session'),
 	MongoStore = require('connect-mongo')(session),
+	router = require('./router.js'),
 	server;
 
-app.use(morgan());
+app.set('port', process.env.PORT || 8001);
+app.use(morgan('dev')); //log
 app.use(cookieParser());
-app.use(cookieSession({
-	name: 'sess_id',
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+app.use(session({
 	keys: 'mail',
-	secret: 'mail.session'
+	secret: 'mail.session',
 	cookie: {
 		maxAge: 1000 * 60 * 5
 	},
 	store: new MongoStore({
-		db: 'mail'
+		db: 'Mail'
 	})
 }));
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
-app.use(express.static(__dirname + '/public'))
+
+app.use(express.static(__dirname + '/public'));
+app.use(router);
 app.use(function(err, req, res, next) {
 	res.send(500);
 });
-
 server = app.listen(PORT, function() {
 	console.log('Listening on port %d', PORT);
 });
