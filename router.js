@@ -1,12 +1,48 @@
 var express = require('express'),
-	router = express.Router();
+	crypto = require('crypto'),
+	router = express.Router(),
+	crypto = require('crypto'),
+	account = require('./models/schemas');
 
 router.post('/login', function(req, res) {
+	var md5 = crypto.createHash('md5'),
+		password = md5.update(req.body.password).digest('hex');
+	account.getOneAccount(req.body.username, function(err, account) {
+		if (err) {
+			res.send(500);
+			res.redirect('/login');
 
+		} else if (!account || account.password !== password) {
+			res.send({
+				success: false
+			});
+			res.redirect('/login');
+		} else if (account.password === password) {
+			req.session.username = req.body.username;
+			res.send({
+				success: true
+			});
+			res.redirect('/');
+		}
+	});
 });
 
 router.post('/register', function(req, res) {
-
+	account.save({
+		username: req.body.username;
+		password: req.body.password
+	}, function(err) {
+		if (err) {
+			res.send(500);
+			res.redirect('/register');
+		} else {
+			req.session.username = req.body.username;
+			res.send({
+				success: true
+			});
+			res.redirect('/');
+		}
+	});
 });
 
 router.get('/getFolder', function(req, res) {
