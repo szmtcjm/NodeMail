@@ -12,6 +12,9 @@ loginModule.controller('signinController', [
 
 loginModule.controller('registerController', ['$scope', '$http',
 	function($scope, $http) {
+		var oldusername;
+		$scope.valid = {};
+
 		$scope.submitClass = {
 			button: true,
 			submit: true,
@@ -21,26 +24,38 @@ loginModule.controller('registerController', ['$scope', '$http',
 			alert(1);
 		}
 		$scope.verifyUsername = function() {
-			$scope.verifying = true;
+			if ($scope.account.username === '' ||
+				$scope.account.username === oldusername) {
+				return;
+			}
+			$scope.valid.verifying = true;
 			$http.get('/verifyUsername', {
 				params: {
-					username: $scope.username
+					username: $scope.account.username
 				}
 			}).
 			success(function(data, status, headers, config) {
-				if (data.existed) {
-					$scope.usernameExisted = true;
-				}
 				setTimeout(function() {
-					$scope.usernameExisted = false;
+					$scope.valid.usernameExisted = false;
 				}, 3000);
+				$scope.valid.verifying = false;
+				oldusername = $scope.account.username;
+				if (data.existed) {
+					$scope.valid.usernameExisted = true;
+					$scope.valid.usernameValid = false;
+				} else {
+					$scope.valid.usernameValid = true;
+				}
 			}).
 			error(function(data, status, headers, config) {
-
-			}).
-			finally(function() {
-				$scope.verifying = false;
+				$scope.valid.verifying = false;
+				$scope.valid.usernameValid = false;
 			});
+		}
+		$scope.verifyConfPassword = function() {
+			$scope.valid.confPasswordvalid =
+				($scope.regForm.loginPasswordConfirm.$valid &&
+				$scope.account.password === $scope.account.confirmPassword);
 		}
 	}
 ]);

@@ -1,25 +1,24 @@
 <div class="">
-	<span ng-show="regForm.loginUsername.required">Username required</span>
-	<span ng-show="regForm.$error.required">two passwords not equle</span>
-	<span class="errormessage" ng-show="usernameExisted">usernameExisted</span>
+	<span ng-shw="regForm.loginUsername.required">Username required</span>
+	<span ng-sow="regForm.$error.required">two passwords not equle</span>
+	<span class="errormessage" ng-show="valid.usernameExisted">usernameExisted</span>
 </div>
-<form name="regForm" class="login-form" action="/register" method="post">
+<form name="regForm" class="login-form" novalidate>
 	<div class="">
 		<label for="login_usermane">Username</label>
 		<input type="text" id="login_usermane" name="loginUsername" 
-		  placeholder="username" ng-model="username" required
+		  placeholder="Username" ng-model="account.username" required
 		  ng-blur="verifyUsername();" class="forminputtext relative">
-			<img src="/images/verifying.gif" class="verifying" 
-			  ng-show="verifying">
+			<img src="/images/verifying.gif" class="verifying" ng-show="valid.verifying">
 		</input>
-		<span class="invalid" ng-show="regForm.loginUsername.$invalid">*</span>
-		<span class="valid" ng-show="regForm.loginUsername.$valid">√</span>
+		<span class="invalid" ng-show="!valid.usernameValid">*</span>
+		<span class="valid" ng-show="valid.usernameValid">√</span>
 	</div>
 	<div class="divformargin">
 		<label for="login_password">Password</label>
 		<input type="password" id="login_password" name="loginPassword" 
-		  placeholder="Password" class="forminputtext" ng-model="password" 
-		  ng-minlength='3' ng-maxlength="8" required/>
+		  placeholder="Password" class="forminputtext" ng-model="account.password" 
+		  ng-minlength='3' ng-maxlength="8" required />
 		<span class="invalid" ng-show="regForm.loginPassword.$invalid">*</span>
 		<span class="valid" ng-show="regForm.loginPassword.$valid">√</span>
 	</div>
@@ -27,11 +26,10 @@
 		<label for="login_password_confirm">Confirm password</label>
 		<input type="password" id="login_password_confirm" name="loginPasswordConfirm" 
 		  placeholder="Confirm password" class="forminputtext" 
-		  ng-model="confirmPassword" ng-minlength='3' ng-maxlength="8" required/>
-		<span class="invalid" ng-show="!(regForm.loginPasswordConfirm.$valid && 
-		  password === confirmPassword)">*</span>
-		<span class="valid" ng-show="regForm.loginPasswordConfirm.$valid && 
-		  password === confirmPassword">√</span>
+		  ng-model="account.confirmPassword" ng-minlength='3' ng-maxlength="8" required
+		  ng-change="verifyConfPassword()"/>
+		<span class="invalid" ng-show="!valid.confPasswordvalid">*</span>
+		<span class="valid" ng-show="valid.confPasswordvalid">√</span>
 	</div>
 	<div>
 		<input type="submit" value="register" ng-disabled="!regForm.$valid" 
