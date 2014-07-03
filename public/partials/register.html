@@ -1,21 +1,41 @@
-<form class="login-form">
-	<div>
-		<label for="login_usermane">Email</label>
-		<input type="email" id="login_username" placeholder="Email" class="forminputtext"/>
+<div class="">
+	<span ng-show="regForm.loginUsername.required">Username required</span>
+	<span ng-show="regForm.$error.required">two passwords not equle</span>
+	<span class="errormessage" ng-show="usernameExisted">usernameExisted</span>
+</div>
+<form name="regForm" class="login-form" action="/register" method="post">
+	<div class="">
+		<label for="login_usermane">Username</label>
+		<input type="text" id="login_usermane" name="loginUsername" 
+		  placeholder="username" ng-model="username" required
+		  ng-blur="verifyUsername();" class="forminputtext relative">
+			<img src="/images/verifying.gif" class="verifying" 
+			  ng-show="verifying">
+		</input>
+		<span class="invalid" ng-show="regForm.loginUsername.$invalid">*</span>
+		<span class="valid" ng-show="regForm.loginUsername.$valid">√</span>
 	</div>
 	<div class="divformargin">
 		<label for="login_password">Password</label>
-		<input type="password" id="login_password" placeholder="Password" 
-			class="forminputtext"/>
+		<input type="password" id="login_password" name="loginPassword" 
+		  placeholder="Password" class="forminputtext" ng-model="password" 
+		  ng-minlength='3' ng-maxlength="8" required/>
+		<span class="invalid" ng-show="regForm.loginPassword.$invalid">*</span>
+		<span class="valid" ng-show="regForm.loginPassword.$valid">√</span>
 	</div>
 	<div class="divformargin">
 		<label for="login_password_confirm">Confirm password</label>
-		<input type="password" id="login_password_confirm" placeholder="Confirm password" 
-			class="forminputtext"/>
+		<input type="password" id="login_password_confirm" name="loginPasswordConfirm" 
+		  placeholder="Confirm password" class="forminputtext" 
+		  ng-model="confirmPassword" ng-minlength='3' ng-maxlength="8" required/>
+		<span class="invalid" ng-show="!(regForm.loginPasswordConfirm.$valid && 
+		  password === confirmPassword)">*</span>
+		<span class="valid" ng-show="regForm.loginPasswordConfirm.$valid && 
+		  password === confirmPassword">√</span>
 	</div>
 	<div>
-	<input type="submit" value="register" class="button submit" ng-mousedown="expression" 
-		ng-mouseup="expression">
+		<input type="submit" value="register" ng-disabled="!regForm.$valid" 
+		  ng-submit="submitForm()" ng-class="submitClass">
 	</div>
 </form>
 <div class="jump">

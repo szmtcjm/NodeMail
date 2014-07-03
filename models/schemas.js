@@ -3,8 +3,10 @@ var mongoose = require('mongoose'),
 
 mongoose.connect('mongodb://localhost/Mail');
 
-var accountSchema = new Schema({
+var AccountSchema = new Schema({
 	username: String,
 	password: String
 });
-exports.AccountSchema = AccountSchema;
+
+AccountModel = mongoose.model('accountModel', AccountSchema);
+exports.AccountModel = AccountModel;

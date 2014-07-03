@@ -1,7 +1,6 @@
 var Schemas = require('./schemas.js'),
 	crypto = require('crypto'),
-	AccountSchema = Schemas.AccountSchema,
-	AccountModel = mongoose.model('accountModel', AccountSchema)
+	AccountModel = Schemas.AccountModel;
 
 exports.save = function(account, callback) {
 	var md5 = crypto.createHash('md5'),
@@ -10,16 +9,15 @@ exports.save = function(account, callback) {
 			username: account.username,
 			password: password
 		});
-
 	accoutIns.save(function(err) {
-		callback(err);
+		callback(err, account);
 	});
 };
 
-exports.getOneAccount = function(username) {
+exports.getOneAccount = function(username, callback) {
 	AccountModel.find({
 		username: username
 	}, function(err, account) {
-
+		callback(err, account);
 	});
 };

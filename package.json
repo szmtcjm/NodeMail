@@ -1,0 +1,31 @@
+{
+	"name": "NodeMail",
+	"description": "",
+	"main": "",
+	"author": "",
+	"version": "0.1.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/szmtcjm/NodeMail.git"
+	},
+	"licenses": "",
+	"devDependencies": {
+		"nodeunit": ">0.0.0",
+		"uglify-js": "1.2.x",
+		"nodelint": ">0.0.0"
+	},
+	"jam": {
+		"main": "lib/async.js",
+		"include": [
+			"lib/async.js",
+			"README.md",
+			"LICENSE"
+		]
+	},
+	"scripts": {
+		"test": "nodeunit test/test-async.js"
+	},
+	"dependencies": {
+		"async": "0.9.0"
+	}
+}

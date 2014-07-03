@@ -2,22 +2,22 @@ var express = require('express'),
 	crypto = require('crypto'),
 	router = express.Router(),
 	crypto = require('crypto'),
-	account = require('./models/schemas');
+	account = require('./models/accounts');
 
 router.post('/login', function(req, res) {
 	var md5 = crypto.createHash('md5'),
 		password = md5.update(req.body.password).digest('hex');
-	account.getOneAccount(req.body.username, function(err, account) {
+	account.getOneAccount(req.body.username, function(err, savedaccount) {
 		if (err) {
-			res.send(500);
+			res.send(500, err);
 			res.redirect('/login');
 
-		} else if (!account || account.password !== password) {
+		} else if (!savedaccount || savedaccount.password !== password) {
 			res.send({
 				success: false
 			});
 			res.redirect('/login');
-		} else if (account.password === password) {
+		} else if (savedaccount.password === password) {
 			req.session.username = req.body.username;
 			res.send({
 				success: true
@@ -28,19 +28,43 @@ router.post('/login', function(req, res) {
 });
 
 router.post('/register', function(req, res) {
-	account.save({
-		username: req.body.username;
-		password: req.body.password
-	}, function(err) {
+	account.getOneAccount(req.body.username, function(err, savedaccount) {
+		debugger
+		if (savedaccount) {
+			res.send({
+				success: false,
+				message: 'the username is exists!'
+			});
+			res.redirect('./pages/login.html#/register');
+		} else {
+			account.save({
+				username: req.body.username,
+				password: req.body.password
+			}, function(err, savedaccount) {
+				debugger;
+				if (err) {
+					res.send(500, err);
+					res.redirect('/pages/login.html#/register');
+				} else {
+					req.session.username = req.body.username;
+					res.send({
+						success: true
+					});
+					res.redirect('/');
+				}
+			});
+		}
+	});
+});
+
+router.get('/verifyUsername', function(req, res) {
+	account.getOneAccount(req.params.username, function(err, savedaccount) {
 		if (err) {
 			res.send(500);
-			res.redirect('/register');
 		} else {
-			req.session.username = req.body.username;
 			res.send({
-				success: true
+				existed: !! savedaccount
 			});
-			res.redirect('/');
 		}
 	});
 });

@@ -34,7 +34,7 @@ a.button  {
 }
 
 .login-form {
-	width: 270px;
+	width: 300px;
 	margin: 200px auto auto;
 	color: white;
 	padding: 30px 50px;
@@ -82,4 +82,28 @@ a.button  {
     -moz-animation: fadeInLeft 0.5s;
     -ms-animation: fadeInLeft 0.5s;
     animation: fadeInLeft 0.5s;
+}
+
+.disabled {
+	background: #4E2122;
+	color: #B5A4A4;
+}
+
+.invalid {
+	color: red;
+}
+
+.valid {
+	color: green; 
+}
+
+.relative {
+	position: relative;
+}
+.verifying {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	top: 0;
+	left: 8px;
 }
