@@ -8,5 +8,5 @@ var AccountSchema = new Schema({
 	password: String
 });
 
-AccountModel = mongoose.model('accountModel', AccountSchema);
+AccountModel = mongoose.model('accounts', AccountSchema);
 exports.AccountModel = AccountModel;

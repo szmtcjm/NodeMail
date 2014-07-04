@@ -10,47 +10,39 @@ router.post('/login', function(req, res) {
 	account.getOneAccount(req.body.username, function(err, savedaccount) {
 		if (err) {
 			res.send(500, err);
-			res.redirect('/login');
-
-		} else if (!savedaccount || savedaccount.password !== password) {
+		} else if ((!savedaccount) || savedaccount.password !== password) {
 			res.send({
-				success: false
+				success: false,
+				message: 'The username is not existed or the password is Incorrect!'
 			});
-			res.redirect('/login');
 		} else if (savedaccount.password === password) {
 			req.session.username = req.body.username;
 			res.send({
 				success: true
 			});
-			res.redirect('/');
 		}
 	});
 });
 
 router.post('/register', function(req, res) {
 	account.getOneAccount(req.body.username, function(err, savedaccount) {
-		debugger
-		if (savedaccount) {
+		if (savedaccount.length > 0) {
 			res.send({
 				success: false,
-				message: 'the username is exists!'
+				msg: 'the username is exists!'
 			});
-			res.redirect('./pages/login.html#/register');
 		} else {
 			account.save({
 				username: req.body.username,
 				password: req.body.password
 			}, function(err, savedaccount) {
-				debugger;
 				if (err) {
 					res.send(500, err);
-					res.redirect('/pages/login.html#/register');
 				} else {
-					req.session.username = req.body.username;
+					req.session.regsuccess = true;
 					res.send({
 						success: true
 					});
-					res.redirect('/');
 				}
 			});
 		}
@@ -58,12 +50,12 @@ router.post('/register', function(req, res) {
 });
 
 router.get('/verifyUsername', function(req, res) {
-	account.getOneAccount(req.params.username, function(err, savedaccount) {
+	account.getOneAccount(req.param('username'), function(err, savedaccount) {
 		if (err) {
 			res.send(500);
 		} else {
 			res.send({
-				existed: !! savedaccount
+				existed: savedaccount.length === 0 ? false : true
 			});
 		}
 	});
@@ -102,8 +94,16 @@ router.get('/action/:action', function(req, res) {
 	});
 });
 
+router.get('/pages/regsuccess.html', function(req, res, next) {
+	if (!req.session.regsuccess) {
+		res.redirect('/pages/login.html');
+	} else {
+		next();
+	}
+});
+
 router.get('/', function(req, res) {
-	if (req.session.user) {
+	if (req.session.username) {
 		res.redirect('/pages/index.html');
 	} else {
 		res.redirect('/pages/login.html');

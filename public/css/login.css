@@ -38,12 +38,21 @@ a.button  {
 	margin: 200px auto auto;
 	color: white;
 	padding: 30px 50px;
-	box-shadow: 0 0 7px #ccc
+	box-shadow: 0 0 7px #ccc;
+	position: relative;
 }
 
 .login-form label {
 	font-size: 18px;
 	font-weight: bold;
+}
+
+.messages {
+	position: absolute;
+	color: #F4F9AC;
+	opacity: 0.7;
+	top: -50px;
+	width: 600px;
 }
 
 .forminputtext {
@@ -104,6 +113,6 @@ a.button  {
 	position: absolute;
 	width: 16px;
 	height: 16px;
-	top: 0;
-	left: 8px;
+	top: 30px;
+	left: 250px;
 }

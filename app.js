@@ -31,8 +31,8 @@ app.use(session({
 	})
 }));
 
-app.use(express.static(__dirname + '/public'));
 app.use(router);
+app.use(express.static(__dirname + '/public'));
 app.use(function(err, req, res, next) {
 	res.send(500);
 });
