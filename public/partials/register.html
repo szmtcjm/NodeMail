@@ -9,9 +9,8 @@
 		<input type="text" id="login_usermane" name="username" 
 		  placeholder="Username" ng-model="account.username" required
 		  ng-blur="verifyUsername();" ng-focus="focus.usermaneFocus=true" 
-		  class="forminputtext" ng-maxlength="8" ng-minlength="3"
-		  ng-change="error.showError=false">
-		</input>
+		  class="forminputtext" ng-maxlength="8" ng-minlength="4"
+		  ng-change="error.showError=false"/>
 		<img src="/images/verifying.gif" class="verifying" ng-show="valid.verifying">
 		<span class="invalid" ng-show="!valid.username">*</span>
 		<span class="valid" ng-show="valid.username">√</span>

@@ -94,9 +94,9 @@ router.get('/action/:action', function(req, res) {
 	});
 });
 
-router.get('/pages/regsuccess.html', function(req, res, next) {
+router.get('/regsuccess.html', function(req, res, next) {
 	if (!req.session.regsuccess) {
-		res.redirect('/pages/login.html');
+		res.redirect('/login.html');
 	} else {
 		next();
 	}
@@ -104,9 +104,9 @@ router.get('/pages/regsuccess.html', function(req, res, next) {
 
 router.get('/', function(req, res) {
 	if (req.session.username) {
-		res.redirect('/pages/index.html');
+		res.redirect('/index.html');
 	} else {
-		res.redirect('/pages/login.html');
+		res.redirect('/login.html');
 	}
 });
 

@@ -15,7 +15,7 @@ exports.save = function(account, callback) {
 };
 
 exports.getOneAccount = function(username, callback) {
-	AccountModel.find({
+	AccountModel.findOne({
 		username: username
 	}, function(err, account) {
 		callback(err, account);

@@ -17,7 +17,7 @@ loginModule.controller('signinController', ['$scope', '$http',
 				if (!data.success) {
 					showError($scope, data.message);
 				} else {
-					location.href = '/pages/index.html';
+					location.href = '/index.html';
 				}
 			}).
 			error(function(data) {
@@ -52,7 +52,7 @@ loginModule.controller('registerController', ['$scope', '$http', '$location',
 				if (!data.success) {
 					showError($scope, data.msg);
 				} else {
-					location.href = '/pages/regsuccess.html';
+					location.href = '/regsuccess.html';
 				}
 			}).
 			error(function(data) {
